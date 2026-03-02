@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LogOut, Settings, Calendar as CalendarIcon } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import BarberConfig from './BarberConfig';
@@ -12,6 +12,15 @@ export default function BarberView({ onBackToClient }: { onBackToClient?: () => 
     barberConfig.isConfigured ? 'agenda' : 'config'
   );
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const wasConfiguredRef = useRef(barberConfig.isConfigured);
+
+  // Al guardar el horario por primera vez, pasar automáticamente a la pestaña Agenda
+  useEffect(() => {
+    if (barberConfig.isConfigured && !wasConfiguredRef.current) {
+      setActiveTab('agenda');
+    }
+    wasConfiguredRef.current = barberConfig.isConfigured;
+  }, [barberConfig.isConfigured]);
 
   const handleTabChange = (tab: 'agenda' | 'config') => {
     setIsTransitioning(true);
