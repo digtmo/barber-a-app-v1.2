@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
+// Evitar caché en Vercel/producción para que is_configured y horarios sean siempre actuales
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -28,7 +32,7 @@ export async function GET(
     ] = await Promise.all([
       supabaseAdmin
         .from("barber_schedule")
-        .select("*")
+        .select("id, barber_id, working_start_time, working_end_time, appointment_duration_minutes, working_days, is_configured")
         .eq("barber_id", barber.id)
         .maybeSingle(),
       supabaseAdmin

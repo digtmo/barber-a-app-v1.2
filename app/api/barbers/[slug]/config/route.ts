@@ -70,24 +70,35 @@ export async function PUT(
       .select("id")
       .eq("barber_id", barber.id)
       .maybeSingle();
-    if (!schedule) {
+    if (!schedule || schedule.id == null) {
       return NextResponse.json({ error: "Horario no encontrado" }, { status: 404 });
     }
 
-    const { error: updateError } = await supabaseAdmin
+    const updatePayload = {
+      working_start_time,
+      working_end_time,
+      appointment_duration_minutes: Number(appointment_duration_minutes),
+      working_days: Array.isArray(working_days) ? working_days : [],
+      is_configured: true,
+    };
+
+    const { data: updatedRow, error: updateError } = await supabaseAdmin
       .from("barber_schedule")
-      .update({
-        working_start_time,
-        working_end_time,
-        appointment_duration_minutes: Number(appointment_duration_minutes),
-        working_days: Array.isArray(working_days) ? working_days : [],
-        is_configured: true,
-      })
-      .eq("id", schedule.id);
+      .update(updatePayload)
+      .eq("id", schedule.id)
+      .select("id, is_configured")
+      .single();
 
     if (updateError) {
       return NextResponse.json(
         { error: updateError.message },
+        { status: 500 }
+      );
+    }
+
+    if (!updatedRow || updatedRow.is_configured !== true) {
+      return NextResponse.json(
+        { error: "No se pudo guardar is_configured. Revisa que la columna exista en barber_schedule." },
         { status: 500 }
       );
     }
@@ -118,8 +129,16 @@ export async function PUT(
       }
     }
 
+    // Devolver el schedule actualizado para que el cliente no dependa del GET (evita caché en producción)
+    const schedulePayload = {
+      working_start_time: updatePayload.working_start_time,
+      working_end_time: updatePayload.working_end_time,
+      appointment_duration_minutes: updatePayload.appointment_duration_minutes,
+      working_days: updatePayload.working_days,
+      is_configured: true,
+    };
     return NextResponse.json(
-      { ok: true },
+      { ok: true, schedule: schedulePayload },
       {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate",

@@ -60,13 +60,18 @@ function mapApiToBarberConfig(api: Awaited<ReturnType<typeof apiFetchBarberData>
   const schedule = api.schedule;
   if (!schedule) return { ...defaultBarberConfig, isConfigured: false };
 
+  const start = toHHmm(schedule.working_start_time ?? '');
+  const end = toHHmm(schedule.working_end_time ?? '');
+  const hasValidSchedule = start.length === 5 && end.length === 5 && start < end;
+  const isConfigured = schedule.is_configured === true || (hasValidSchedule && (schedule.working_days?.length ?? 0) > 0);
+
   return {
-    startTime: toHHmm(schedule.working_start_time),
-    endTime: toHHmm(schedule.working_end_time),
+    startTime: start || defaultBarberConfig.startTime,
+    endTime: end || defaultBarberConfig.endTime,
     slotDuration: (schedule.appointment_duration_minutes === 60 ? 60 : 30) as 30 | 60,
     workingDays: schedule.working_days ?? [],
     blockedDates: (api.blocked_dates ?? []).map((d) => d.date),
-    isConfigured: schedule.is_configured ?? false,
+    isConfigured,
   };
 }
 
@@ -213,10 +218,15 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
         appointment_duration_minutes: config.slotDuration ?? barberConfig.slotDuration,
         working_days: config.workingDays ?? barberConfig.workingDays,
       };
-      await apiUpdateBarberConfig(slug, newConfig);
-      // Refetch con cache-bust para evitar datos en caché en producción
+      const putResponse = await apiUpdateBarberConfig(slug, newConfig);
+      // Refetch para reservas y blocked_dates; en producción el GET puede venir en caché
       const fresh = await apiFetchBarberData(slug, true);
-      setBarberConfig(mapApiToBarberConfig(fresh));
+      const baseMapped = mapApiToBarberConfig(fresh);
+      // Prioridad al schedule devuelto por el PUT para no depender del GET en producción
+      const finalConfig = putResponse?.schedule
+        ? mapApiToBarberConfig({ ...fresh, schedule: putResponse.schedule })
+        : baseMapped;
+      setBarberConfig(finalConfig);
       setAppointments(mapApiReservationsToAppointments(fresh.reservations));
     },
     [slug, barberConfig]

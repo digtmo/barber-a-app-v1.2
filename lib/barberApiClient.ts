@@ -80,6 +80,11 @@ export async function login(email: string, password: string): Promise<{ token: s
   return data as { token: string };
 }
 
+export interface ApiUpdateConfigResponse {
+  ok: boolean;
+  schedule?: ApiSchedule;
+}
+
 export async function updateBarberConfig(
   slug: string,
   config: {
@@ -88,7 +93,7 @@ export async function updateBarberConfig(
     appointment_duration_minutes: number;
     working_days: number[];
   }
-): Promise<void> {
+): Promise<ApiUpdateConfigResponse> {
   const token = getToken();
   if (!token) throw new Error('No autorizado');
   const res = await fetch(`/api/barbers/${encodeURIComponent(slug)}/config`, {
@@ -96,14 +101,18 @@ export async function updateBarberConfig(
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
+      'Cache-Control': 'no-cache',
+      Pragma: 'no-cache',
     },
     body: JSON.stringify(config),
+    cache: 'no-store',
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     if (res.status === 402) throw new Error('Suscripción no activa');
     throw new Error((data as { error?: string }).error || `Error ${res.status}`);
   }
+  return data as ApiUpdateConfigResponse;
 }
 
 export async function blockDate(slug: string, date: string): Promise<void> {

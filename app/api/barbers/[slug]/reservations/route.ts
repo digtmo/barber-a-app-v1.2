@@ -26,7 +26,11 @@ export async function POST(
       .eq("barber_id", barber.id)
       .maybeSingle();
 
-    if (!schedule || !schedule.is_configured) {
+    const hasTimes = schedule?.working_start_time && schedule?.working_end_time;
+    const hasDays = Array.isArray(schedule?.working_days) && schedule.working_days.length > 0;
+    const isConfigured = schedule?.is_configured === true || (!!hasTimes && hasDays);
+
+    if (!schedule || !isConfigured) {
       return NextResponse.json(
         { error: "El barbero no tiene horario configurado" },
         { status: 400 }
