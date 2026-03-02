@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyBarberTokenEdge } from "@/lib/jwt-edge";
 
-const BARBER_DOMAIN = process.env.BARBER_DOMAIN ?? "barber.com";
+const BARBER_DOMAIN = process.env.BARBER_DOMAIN ?? "tubarber.com";
 
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
@@ -13,21 +13,37 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const host = request.headers.get("host") ?? "";
+  const host = (request.headers.get("host") ?? "").toLowerCase();
   let slug: string | null = null;
 
   if (host.includes("localhost") || host.startsWith("127.0.0.1")) {
-    // Desarrollo: slug desde path (/dani, /dani/acceso o /api/barbers/dani/...)
+    // Desarrollo: slug desde path (/dani, /dani/acceso)
     const pathSlug = pathname.match(/^\/([^/]+)/)?.[1];
-    if (pathSlug && pathSlug !== "acceso" && pathSlug !== "api") {
+    if (pathSlug && !["acceso", "registro", "api"].includes(pathSlug)) {
       slug = pathSlug;
     }
   } else {
-    // Producción: subdominio (dani.barber.com -> dani). barber.com o www.barber.com no tienen slug.
-    const rootDomain = host === BARBER_DOMAIN || host === "www." + BARBER_DOMAIN;
-    if (!rootDomain && host.endsWith("." + BARBER_DOMAIN)) {
-      const subdomain = host.slice(0, host.indexOf("."));
-      if (subdomain && subdomain !== "www") slug = subdomain;
+    const isRoot = host === BARBER_DOMAIN || host === "www." + BARBER_DOMAIN;
+
+    // ——— Redirigir path → subdominio: tubarber.com/dani o www.tubarber.com/dani → dani.tubarber.com ———
+    if (isRoot && pathname.startsWith("/")) {
+      const pathSlug = pathname.match(/^\/([^/]+)/)?.[1];
+      const rest = pathSlug ? pathname.slice(1 + pathSlug.length) : ""; // "" o "/acceso"
+      if (pathSlug && !["acceso", "registro", "api", ""].includes(pathSlug)) {
+        const target = `https://${pathSlug}.${BARBER_DOMAIN}${rest || ""}`;
+        return NextResponse.redirect(target, 307);
+      }
+    }
+
+    // Producción: subdominio dani.tubarber.com o www.dani.tubarber.com → slug = dani
+    const domainEscaped = BARBER_DOMAIN.replace(".", "\\.");
+    const subdomainMatch = host.match(new RegExp(`^(.+)\\.${domainEscaped}$`));
+    if (subdomainMatch) {
+      const part = subdomainMatch[1];
+      if (part !== "www") {
+        slug = part.startsWith("www.") ? part.slice(4) : part;
+        if (!slug) slug = null;
+      }
     }
   }
 
@@ -76,6 +92,7 @@ export const config = {
   matcher: [
     "/",
     "/acceso",
+    "/registro",
     "/:slug",
     "/:slug/acceso",
     "/api/barbers/:path*",

@@ -7,16 +7,24 @@ export default function Home() {
         BARBER
       </h1>
       <p className="text-textMuted text-center max-w-md mb-10">
-        Para reservar, entra a la página de tu barbero: <strong className="text-goldLight">[nombre].barber.com</strong>
+        Para reservar, entra a la página de tu barbero: <strong className="text-goldLight">[nombre].tubarber.com</strong>
         <br />
-        Ejemplo: dani.barber.com · carlos.barber.com
+        Ejemplo: dani.tubarber.com · carlos.tubarber.com
       </p>
-      <Link
-        href="/acceso"
-        className="px-8 py-4 bg-gold hover:bg-goldLight text-surface font-bold rounded-lg transition-colors shadow-lg shadow-gold/20"
-      >
-        Acceso barberos
-      </Link>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Link
+          href="/registro"
+          className="px-8 py-4 bg-gold hover:bg-goldLight text-surface font-bold rounded-lg transition-colors shadow-lg shadow-gold/20 text-center"
+        >
+          Registrarme como barbero
+        </Link>
+        <Link
+          href="/acceso"
+          className="px-8 py-4 bg-card border border-gold hover:bg-input text-text font-bold rounded-lg transition-colors text-center"
+        >
+          Acceso barberos
+        </Link>
+      </div>
     </div>
   );
 }
