@@ -103,7 +103,7 @@
         "height": 512
       },
       "sameAs": [
-        "https://instagram.com/tubarberapp",
+        "https://instagram.com/tubarber_com",
         "https://twitter.com/tubarberapp"
       ],
       "contactPoint": {
@@ -833,7 +833,7 @@
   .footer-links a:hover { color: var(--gold); }
   .footer-copy { font-size: 0.78rem; color: var(--muted); width: 100%; }
 
-  /* MODAL */
+  /* MODAL — responsivo para móvil */
   .modal-overlay {
     position: fixed; inset: 0; z-index: 1000;
     background: rgba(0,0,0,0.8);
@@ -842,8 +842,21 @@
     opacity: 0; pointer-events: none;
     transition: opacity 0.25s;
     backdrop-filter: blur(6px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .modal-overlay.active { opacity: 1; pointer-events: all; }
+
+  @media (max-width: 480px) {
+    .modal-overlay {
+      align-items: flex-start;
+      padding: 0.5rem;
+      padding-top: max(0.5rem, env(safe-area-inset-top));
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+  }
 
   .modal {
     background: var(--dark3);
@@ -854,8 +867,23 @@
     position: relative;
     transform: translateY(20px);
     transition: transform 0.25s;
+    flex-shrink: 0;
+    margin: auto;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
   }
   .modal-overlay.active .modal { transform: translateY(0); }
+
+  @media (max-width: 480px) {
+    .modal {
+      max-height: none;
+      margin: 0 auto 2rem;
+      padding: 1.25rem 1rem 1.5rem;
+      border-radius: 12px;
+    }
+  }
 
   .modal-close {
     position: absolute; top: 1.2rem; right: 1.2rem;
@@ -868,13 +896,27 @@
   }
   .modal-close:hover { background: rgba(255,255,255,0.1); }
 
+  @media (max-width: 480px) {
+    .modal-close {
+      top: 0.75rem; right: 0.75rem;
+      width: 36px; height: 36px;
+    }
+  }
+
   .modal h2 { font-family: var(--serif); font-size: 1.7rem; color: var(--gold); margin-bottom: 0.3rem; }
   .modal p { font-size: 0.85rem; color: var(--muted); margin-bottom: 2rem; }
+
+  @media (max-width: 480px) {
+    .modal h2 { font-size: 1.35rem; margin-bottom: 0.2rem; padding-right: 2.5rem; }
+    .modal p { font-size: 0.8rem; margin-bottom: 1.25rem; }
+  }
 
   .form-group { margin-bottom: 1.2rem; }
   .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text); margin-bottom: 0.4rem; letter-spacing: 0.04em; }
   .form-group input {
     width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     background: var(--dark4);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 7px;
@@ -888,14 +930,24 @@
   .form-group input:focus { border-color: var(--gold); }
   .form-group input::placeholder { color: rgba(255,255,255,0.2); }
 
+  @media (max-width: 480px) {
+    .form-group { margin-bottom: 1rem; }
+    .form-group input {
+      padding: 0.65rem 0.75rem;
+      font-size: 16px;
+    }
+  }
+
   .slug-preview {
     margin-top: 0.4rem;
     font-size: 0.78rem; color: var(--muted);
+    word-break: break-all;
   }
   .slug-preview strong { color: var(--gold); }
 
   .modal-submit {
     width: 100%;
+    box-sizing: border-box;
     background: var(--gold); color: var(--dark);
     border: none; border-radius: 7px;
     padding: 0.9rem;
@@ -906,7 +958,13 @@
   }
   .modal-submit:hover { background: var(--gold-light); }
 
+  @media (max-width: 480px) {
+    .modal-submit { padding: 0.85rem; font-size: 0.95rem; }
+  }
+
   .modal-note { font-size: 0.75rem; color: var(--muted); text-align: center; margin-top: 1rem; }
+  #form-error { box-sizing: border-box; max-width: 100%; }
+  #modal-success .modal-submit { margin-top: 0; }
 
   /* ANIMATIONS */
 
@@ -1041,8 +1099,8 @@
 <!-- CÓMO FUNCIONA -->
 <section id="como-funciona">
   <div class="section-label reveal">Cómo funciona</div>
-  <h2 class="section-title reveal">Simple para ti.<br>Simple para tu cliente.</h2>
-  <div class="flow-grid reveal">
+  <h2 class="section-title reveal">Simple para tu cliente.</h2>
+  <div class="flow-grid reveal" style="grid-template-columns: 1fr; max-width: 520px; margin-left: auto; margin-right: auto;">
     <div class="flow-col">
       <div class="flow-col-title">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1063,28 +1121,6 @@
       <div class="flow-step">
         <div class="flow-step-num">4</div>
         <div class="flow-step-text"><strong>¡Listo!</strong>Confirma y la reserva queda registrada al instante.</div>
-      </div>
-    </div>
-    <div class="flow-col">
-      <div class="flow-col-title">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        Flujo del barbero
-      </div>
-      <div class="flow-step">
-        <div class="flow-step-num">1</div>
-        <div class="flow-step-text"><strong>Crea tu negocio</strong>Nombre, slug personalizado, email y contraseña. Menos de 2 minutos.</div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-step-num">2</div>
-        <div class="flow-step-text"><strong>Configura tu horario</strong>Define tus días de trabajo, horas de atención y bloqueos.</div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-step-num">3</div>
-        <div class="flow-step-text"><strong>Comparte tu link</strong>Tu página pública ya está activa en tunegocio.tubarber.com</div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-step-num">4</div>
-        <div class="flow-step-text"><strong>Recibe y gestiona</strong>Ve todas tus reservas en un calendario semanal limpio y ordenado.</div>
       </div>
     </div>
   </div>
@@ -1137,31 +1173,6 @@
         Proceso completo: ~5 minutos
       </div>
     </div>
-    <div>
-      <div class="registro-card">
-        <h3>Tu barbería en línea</h3>
-        <p>Así se ve el panel cuando terminas de registrarte.</p>
-        <div style="background:var(--dark4);border:1px solid var(--border);border-radius:8px;padding:1.2rem;font-size:0.82rem;">
-          <div style="color:var(--muted);margin-bottom:0.5rem;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;">Estado de tu cuenta</div>
-          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">
-            <div style="width:10px;height:10px;border-radius:50%;background:#FFBD2E;flex-shrink:0;"></div>
-            <span style="color:var(--text);">Sin configurar — completa tu horario para activarte</span>
-          </div>
-          <div style="background:var(--dark3);border-radius:6px;padding:0.8rem;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;">
-              <span style="color:var(--muted);">Negocio</span><span>Iron Cuts CL</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;">
-              <span style="color:var(--muted);">Dominio</span><span style="color:var(--gold);">ironcuts.tubarber.com</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--muted);">Horario</span><span style="color:#FFBD2E;">Pendiente</span>
-            </div>
-          </div>
-          <button onclick="openModal()" style="width:100%;margin-top:0.8rem;background:var(--gold);color:var(--dark);border:none;border-radius:6px;padding:0.6rem;font-weight:700;font-size:0.85rem;cursor:pointer;">Completar configuración →</button>
-        </div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -1199,47 +1210,6 @@
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
       <h4>Cualquier dispositivo</h4>
       <p>Funciona perfecto en el celular, tablet o computador. Sin app, sin instalación, solo un navegador.</p>
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIOS -->
-<section id="testimonios">
-  <div class="section-label reveal">Testimonios</div>
-  <h2 class="section-title reveal">Lo que dicen<br>los barberos</h2>
-  <div class="testi-grid reveal">
-    <div class="testi-card">
-      <div class="stars">★★★★★</div>
-      <p class="testi-text">Llevaba tres años con agenda en papel. Con TuBarber tardé una tarde en configurar todo y al día siguiente ya tenía reservas. El link de WhatsApp fue un antes y después.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">MR</div>
-        <div>
-          <div class="testi-name">Matías Rojas</div>
-          <div class="testi-city">Santiago, Chile</div>
-        </div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="stars">★★★★★</div>
-      <p class="testi-text">Mis clientes ahora reservan a las 11 de la noche y yo me entero a la mañana. Dejé de perder turnos por no contestar el teléfono. Es exactamente lo que necesitaba.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">DV</div>
-        <div>
-          <div class="testi-name">Diego Valenzuela</div>
-          <div class="testi-city">Valparaíso, Chile</div>
-        </div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="stars">★★★★★</div>
-      <p class="testi-text">Lo que más me gustó es que mis clientes no tienen que descargar nada ni crear cuenta. Solo entran al link y reservan. La adopción fue instantánea.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">CF</div>
-        <div>
-          <div class="testi-name">Cristóbal Fuentes</div>
-          <div class="testi-city">Concepción, Chile</div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -1319,6 +1289,46 @@
   </p>
 </section>
 
+<!-- TESTIMONIOS -->
+<section id="testimonios">
+  <div class="section-label reveal">Testimonios</div>
+  <h2 class="section-title reveal">Lo que dicen<br>los barberos</h2>
+  <div class="testi-grid reveal">
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <p class="testi-text">Llevaba tres años con agenda en papel. Con TuBarber tardé una tarde en configurar todo y al día siguiente ya tenía reservas. El link de WhatsApp fue un antes y después.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">MR</div>
+        <div>
+          <div class="testi-name">Matías Rojas</div>
+          <div class="testi-city">Santiago, Chile</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <p class="testi-text">Mis clientes ahora reservan a las 11 de la noche y yo me entero a la mañana. Dejé de perder turnos por no contestar el teléfono. Es exactamente lo que necesitaba.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">DV</div>
+        <div>
+          <div class="testi-name">Diego Valenzuela</div>
+          <div class="testi-city">Valparaíso, Chile</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="stars">★★★★★</div>
+      <p class="testi-text">Lo que más me gustó es que mis clientes no tienen que descargar nada ni crear cuenta. Solo entran al link y reservan. La adopción fue instantánea.</p>
+      <div class="testi-author">
+        <div class="testi-avatar">CF</div>
+        <div>
+          <div class="testi-name">Cristóbal Fuentes</div>
+          <div class="testi-city">Concepción, Chile</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- FAQ (Rich Results para Google) -->
 <section id="faq" style="background:var(--dark2);padding:6rem 5vw;">
@@ -1393,9 +1403,9 @@
     <a href="#">Privacidad</a>
     <a href="#">Términos</a>
     <a href="#">Contacto</a>
-    <a href="#">Instagram</a>
+    <a href="https://instagram.com/tubarber_com" target="_blank" rel="noopener noreferrer">Instagram</a>
   </div>
-  <p class="footer-copy">© 2025 TuBarber. Todos los derechos reservados.</p>
+  <p class="footer-copy">© 2026 TuBarber. Todos los derechos reservados.</p>
 </footer>
 
 <!-- MODAL -->
@@ -1434,7 +1444,7 @@
       </div>
 
       <!-- Error message -->
-      <div id="form-error" style="display:none;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);border-radius:7px;padding:0.7rem 1rem;margin-bottom:1rem;font-size:0.83rem;color:#FF8080;"></div>
+      <div id="form-error" style="display:none;background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);border-radius:7px;padding:0.7rem 1rem;margin-bottom:1rem;font-size:0.83rem;color:#FF8080;word-break:break-word;"></div>
 
       <button class="modal-submit" id="submit-btn" onclick="handleRegister()">
         <span id="btn-text">Crear mi cuenta →</span>
@@ -1453,7 +1463,7 @@
       </div>
       <h3 style="font-family:var(--serif);color:var(--gold);font-size:1.4rem;margin-bottom:0.5rem;">¡Cuenta creada!</h3>
       <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem;">Tu barbería ya está registrada. Ahora configura tu horario para empezar a recibir reservas.</p>
-      <div id="success-url" style="background:var(--dark4);border:1px solid var(--border);border-radius:7px;padding:0.7rem 1rem;font-size:0.85rem;color:var(--gold);margin-bottom:1.5rem;"></div>
+      <div id="success-url" style="background:var(--dark4);border:1px solid var(--border);border-radius:7px;padding:0.7rem 1rem;font-size:0.85rem;color:var(--gold);margin-bottom:1.5rem;word-break:break-all;"></div>
       <button class="modal-submit" id="btn-goto-panel" onclick="gotoPanel()">Ir a mi panel →</button>
     </div>
   </div>

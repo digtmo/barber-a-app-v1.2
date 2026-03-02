@@ -54,8 +54,9 @@ export interface ApiBarberData {
   reservations: ApiReservation[];
 }
 
-export async function fetchBarberData(slug: string): Promise<ApiBarberData> {
-  const res = await fetch(`/api/barbers/${encodeURIComponent(slug)}`, {
+export async function fetchBarberData(slug: string, cacheBust = false): Promise<ApiBarberData> {
+  const url = `/api/barbers/${encodeURIComponent(slug)}${cacheBust ? `?_=${Date.now()}` : ''}`;
+  const res = await fetch(url, {
     cache: 'no-store',
     headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
   });

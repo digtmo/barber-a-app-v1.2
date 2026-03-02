@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { LogOut, Settings, Calendar as CalendarIcon, Users } from 'lucide-react';
+import { LogOut, Settings, Calendar as CalendarIcon } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import BarberConfig from './BarberConfig';
 import BarberAgenda from './BarberAgenda';
@@ -55,7 +55,7 @@ export default function BarberView({ onBackToClient }: { onBackToClient?: () => 
 
   return (
     <div className="min-h-screen bg-surface text-text">
-      <header className="bg-surfaceSecondary border-b border-subtle p-6">
+      <header className="bg-surfaceAlt border-b border-subtle p-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold text-gold font-display">
@@ -64,15 +64,6 @@ export default function BarberView({ onBackToClient }: { onBackToClient?: () => 
             <p className="text-textMuted text-sm mt-1">Gestiona tu agenda</p>
           </div>
           <div className="flex items-center gap-3">
-            {onBackToClient && (
-              <button
-                onClick={onBackToClient}
-                className="flex items-center gap-2 px-4 py-2 bg-gold hover:bg-goldLight rounded-lg transition-colors font-semibold text-base"
-              >
-                <Users className="w-4 h-4" />
-                Ir a Cliente
-              </button>
-            )}
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 bg-card hover:bg-input rounded-lg transition-colors text-text border border-subtle"

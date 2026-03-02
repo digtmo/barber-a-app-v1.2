@@ -108,7 +108,8 @@ export async function PUT(
     if (reservations?.length) {
       const toDelete: string[] = [];
       for (const r of reservations) {
-        if (!validStarts.has(r.time)) {
+        const timeNorm = String(r.time).slice(0, 5);
+        if (!validStarts.has(timeNorm)) {
           toDelete.push(r.id);
         }
       }
@@ -117,7 +118,15 @@ export async function PUT(
       }
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json(
+      { ok: true },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+          Pragma: "no-cache",
+        },
+      }
+    );
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Error en el servidor" },

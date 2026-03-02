@@ -214,9 +214,12 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
         working_days: config.workingDays ?? barberConfig.workingDays,
       };
       await apiUpdateBarberConfig(slug, newConfig);
-      await refetchBarberData();
+      // Refetch con cache-bust para evitar datos en caché en producción
+      const fresh = await apiFetchBarberData(slug, true);
+      setBarberConfig(mapApiToBarberConfig(fresh));
+      setAppointments(mapApiReservationsToAppointments(fresh.reservations));
     },
-    [slug, barberConfig, refetchBarberData]
+    [slug, barberConfig]
   );
 
   const blockDate = useCallback(
