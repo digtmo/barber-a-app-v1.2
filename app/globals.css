@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  background-color: #0D0D0D;
+  color: #E8E4DC;
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+}
