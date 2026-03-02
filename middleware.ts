@@ -25,6 +25,12 @@ export async function middleware(request: NextRequest) {
   } else {
     const isRoot = host === BARBER_DOMAIN || host === "www." + BARBER_DOMAIN;
 
+    // ——— Dominio principal: servir landing HTML en / ———
+    if (isRoot && pathname === "/") {
+      url.pathname = "/landing.html";
+      return NextResponse.rewrite(url);
+    }
+
     // ——— Redirigir path → subdominio: tubarber.com/dani o www.tubarber.com/dani → dani.tubarber.com ———
     if (isRoot && pathname.startsWith("/")) {
       const pathSlug = pathname.match(/^\/([^/]+)/)?.[1];
