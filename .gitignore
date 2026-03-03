@@ -42,5 +42,4 @@ next-env.d.ts
 coverage/
 
 # Misc
-*.pemnode_modules/
-.next/
+*.pem
