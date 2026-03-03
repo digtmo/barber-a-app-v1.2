@@ -40,17 +40,21 @@ export async function POST(
       );
     }
 
+    // Eliminar suscripción previa con el mismo endpoint (no requiere UNIQUE en la tabla)
+    await supabaseAdmin
+      .from("barber_push_subscriptions")
+      .delete()
+      .eq("barber_id", barber.id)
+      .eq("endpoint", subscription.endpoint);
+
     const { error } = await supabaseAdmin
       .from("barber_push_subscriptions")
-      .upsert(
-        {
-          barber_id: barber.id,
-          endpoint: subscription.endpoint,
-          p256dh: subscription.keys.p256dh,
-          auth: subscription.keys.auth,
-        },
-        { onConflict: "barber_id,endpoint", ignoreDuplicates: false }
-      );
+      .insert({
+        barber_id: barber.id,
+        endpoint: subscription.endpoint,
+        p256dh: subscription.keys.p256dh,
+        auth: subscription.keys.auth,
+      });
 
     if (error) {
       return NextResponse.json(

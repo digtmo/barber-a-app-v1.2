@@ -33,6 +33,12 @@ export default function BarberPushNotifications() {
     }
     setStatus('loading');
     setMessage(null);
+
+    const timeout = setTimeout(() => {
+      setStatus((s) => (s === 'loading' ? 'error' : s));
+      setMessage('Tardó demasiado. Reintenta o añade la app a la pantalla de inicio.');
+    }, 12000);
+
     try {
       const permission = await Notification.requestPermission();
       if (permission !== 'granted') {
@@ -58,6 +64,8 @@ export default function BarberPushNotifications() {
     } catch (e) {
       setStatus('error');
       setMessage(e instanceof Error ? e.message : 'Error al activar');
+    } finally {
+      clearTimeout(timeout);
     }
   }, [slug]);
 
