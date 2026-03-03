@@ -151,7 +151,7 @@ export async function POST(
       const domain = process.env.NEXT_PUBLIC_BARBER_DOMAIN || "tubarber.com";
       const agendaUrl = `https://${slug}.${domain}/acceso`;
       const payload = {
-        title: "Nueva reserva",
+        title: "Nueva reserva:",
         body: `${clientName} - ${dayStr} ${dayNum} ${monthStr}\na las ${timeStr}`,
         url: agendaUrl,
       };

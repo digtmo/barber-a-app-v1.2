@@ -1,6 +1,6 @@
 {
   "name": "TuBarber - Agenda de reservas",
-  "short_name": "TuBarber",
+  "short_name": "TuBarber.com",
   "description": "Agenda de citas para tu barbería",
   "start_url": "/acceso",
   "display": "standalone",
