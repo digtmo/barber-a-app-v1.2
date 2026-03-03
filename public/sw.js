@@ -18,24 +18,24 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('push', (event) => {
   if (!event.data) return;
-  let data = { title: 'TuBarber', body: '' };
+  let data = { title: '', body: '', url: '/' };
   try {
     data = event.data.json();
   } catch (_) {}
   event.waitUntil(
-    self.registration.showNotification(data.title || 'TuBarber', {
-      body: data.body || 'Nueva reserva',
+    self.registration.showNotification(data.title || 'Nueva reserva', {
+      body: data.body || 'Toca para abrir tu agenda',
       icon: '/icon-512.png',
       badge: '/icon-512.png',
       tag: 'tubarber-reserva',
-      data: { url: data.url || '/' },
+      data: { url: data.url || '/acceso' },
     })
   );
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const url = event.notification.data?.url || '/';
+  const url = event.notification.data?.url || '/acceso';
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       if (clientList.length) {

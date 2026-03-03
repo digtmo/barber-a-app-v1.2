@@ -146,11 +146,14 @@ export async function POST(
       const dayName = dateObj.toLocaleDateString("es-ES", { weekday: "long" });
       const dayNum = dateObj.getDate();
       const month = dateObj.toLocaleDateString("es-ES", { month: "long" });
-      const body = `Nueva reserva: ${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${dayNum} ${month.charAt(0).toUpperCase() + month.slice(1)} a las ${timeStr} - ${clientName}`;
+      const dayStr = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+      const monthStr = month.charAt(0).toUpperCase() + month.slice(1);
+      const domain = process.env.NEXT_PUBLIC_BARBER_DOMAIN || "tubarber.com";
+      const agendaUrl = `https://${slug}.${domain}/acceso`;
       const payload = {
         title: "Nueva reserva",
-        body,
-        url: "/",
+        body: `${clientName} - ${dayStr} ${dayNum} ${monthStr}\na las ${timeStr}`,
+        url: agendaUrl,
       };
       if (subs?.length) {
         subs.forEach((sub) => {

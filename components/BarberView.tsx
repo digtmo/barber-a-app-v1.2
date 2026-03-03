@@ -6,6 +6,7 @@ import { useApp } from '@/context/AppContext';
 import BarberConfig from './BarberConfig';
 import BarberAgenda from './BarberAgenda';
 import BarberPushNotifications from './BarberPushNotifications';
+import InstallPWAButton from './InstallPWAButton';
 
 export default function BarberView({ onBackToClient }: { onBackToClient?: () => void }) {
   const { barberConfig, logoutBarber, isLoadingBarberData, barberDataError, refetchBarberData } = useApp();
@@ -138,6 +139,7 @@ export default function BarberView({ onBackToClient }: { onBackToClient?: () => 
           </main>
         </>
       )}
+      <InstallPWAButton />
     </div>
   );
 }
