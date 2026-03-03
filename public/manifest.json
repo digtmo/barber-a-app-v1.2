@@ -2,7 +2,7 @@
   "name": "TuBarber - Agenda de reservas",
   "short_name": "TuBarber",
   "description": "Agenda de citas para tu barbería",
-  "start_url": "/",
+  "start_url": "/acceso",
   "display": "standalone",
   "background_color": "#0D0D0D",
   "theme_color": "#C9A84C",

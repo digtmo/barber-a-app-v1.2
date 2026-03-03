@@ -18,6 +18,7 @@ import {
 } from '@/lib/barberApiClient';
 
 interface AppContextType {
+  slug: string;
   appointments: Appointment[];
   barberConfig: BarberConfig;
   isBarberAuthenticated: boolean;
@@ -288,6 +289,7 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
   return (
     <AppContext.Provider
       value={{
+        slug,
         appointments,
         barberConfig,
         isBarberAuthenticated,

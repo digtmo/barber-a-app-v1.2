@@ -2,6 +2,7 @@ import './globals.css';
 import { Playfair_Display, DM_Sans } from 'next/font/google';
 import type { Metadata, Viewport } from 'next';
 import PWARegister from '@/components/PWARegister';
+import InstallPWAButton from '@/components/InstallPWAButton';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -49,6 +50,7 @@ export default function RootLayout({
       <body className="antialiased font-sans">
         <PWARegister />
         {children}
+        <InstallPWAButton />
       </body>
     </html>
   );

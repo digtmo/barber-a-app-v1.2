@@ -16,6 +16,39 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+  let data = { title: 'TuBarber', body: '' };
+  try {
+    data = event.data.json();
+  } catch (_) {}
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'TuBarber', {
+      body: data.body || 'Nueva reserva',
+      icon: '/icon-512.png',
+      badge: '/icon-512.png',
+      tag: 'tubarber-reserva',
+      data: { url: data.url || '/' },
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || '/';
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      if (clientList.length) {
+        const c = clientList[0];
+        if (c.navigate) c.navigate(url);
+        c.focus();
+      } else if (self.clients.openWindow) {
+        self.clients.openWindow(url);
+      }
+    })
+  );
+});
+
 self.addEventListener('fetch', (event) => {
   event.respondWith(fetch(event.request));
 });

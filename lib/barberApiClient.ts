@@ -115,6 +115,45 @@ export async function updateBarberConfig(
   return data as ApiUpdateConfigResponse;
 }
 
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+/** Envía la suscripción push del barbero para recibir notificaciones de nuevas reservas. */
+export async function savePushSubscription(
+  slug: string,
+  subscription: PushSubscription
+): Promise<void> {
+  const token = getToken();
+  if (!token) throw new Error('No autorizado');
+  const p256dh = subscription.getKey('p256dh');
+  const auth = subscription.getKey('auth');
+  if (!p256dh || !auth) throw new Error('Suscripción push inválida');
+  const sub = {
+    endpoint: subscription.endpoint,
+    keys: {
+      p256dh: arrayBufferToBase64(p256dh),
+      auth: arrayBufferToBase64(auth),
+    },
+  };
+  const res = await fetch(`/api/barbers/${encodeURIComponent(slug)}/push-subscription`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ subscription: sub }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (res.status === 402) throw new Error('Suscripción no activa');
+    throw new Error((data as { error?: string }).error || 'Error al guardar notificaciones');
+  }
+}
+
 export async function blockDate(slug: string, date: string): Promise<void> {
   const token = getToken();
   if (!token) throw new Error('No autorizado');

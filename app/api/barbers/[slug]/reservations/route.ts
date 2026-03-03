@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { buildSlotsByDuration, hasOverlap } from "@/lib/time";
+import { sendPushNotification, isPushConfigured } from "@/lib/push";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_REGEX = /^([01]?\d|2[0-3]):[0-5]\d$/;
@@ -131,6 +132,28 @@ export async function POST(
         { error: insertError.message },
         { status: 500 }
       );
+    }
+
+    // Notificación push al barbero (si tiene suscripción y VAPID configurado)
+    if (isPushConfigured()) {
+      const { data: subs } = await supabaseAdmin
+        .from("barber_push_subscriptions")
+        .select("endpoint, p256dh, auth")
+        .eq("barber_id", barber.id);
+      const clientName = (reservation.client_name ?? "").trim();
+      const payload = {
+        title: "Nueva reserva",
+        body: `${clientName || "Un cliente"} - ${reservation.date} ${reservation.time}`,
+        url: "/",
+      };
+      if (subs?.length) {
+        subs.forEach((sub) => {
+          sendPushNotification(
+            { endpoint: sub.endpoint, p256dh: sub.p256dh, auth: sub.auth },
+            payload
+          ).catch(() => {});
+        });
+      }
     }
 
     return NextResponse.json(reservation);

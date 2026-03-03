@@ -5,6 +5,7 @@ import { LogOut, Settings, Calendar as CalendarIcon } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import BarberConfig from './BarberConfig';
 import BarberAgenda from './BarberAgenda';
+import BarberPushNotifications from './BarberPushNotifications';
 
 export default function BarberView({ onBackToClient }: { onBackToClient?: () => void }) {
   const { barberConfig, logoutBarber, isLoadingBarberData, barberDataError, refetchBarberData } = useApp();
@@ -73,6 +74,7 @@ export default function BarberView({ onBackToClient }: { onBackToClient?: () => 
             <p className="text-textMuted text-sm mt-1">Gestiona tu agenda</p>
           </div>
           <div className="flex items-center gap-3">
+            <BarberPushNotifications />
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 bg-card hover:bg-input rounded-lg transition-colors text-text border border-subtle"
