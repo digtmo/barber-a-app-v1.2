@@ -6,12 +6,11 @@ import { useApp } from '@/context/AppContext';
 import { getWeekDates, formatDate, formatDisplayDate, isToday } from '@/utils/dateUtils';
 
 export default function BarberAgenda() {
-  const { getTimeSlotsForDate, barberConfig, blockDate, unblockDate, clearAllBlockedDates, clearAllReservations, appointments, deleteReservation } = useApp();
+  const { getTimeSlotsForDate, barberConfig, blockDate, unblockDate, clearAllBlockedDates, appointments, deleteReservation } = useApp();
   const [selectedDate, setSelectedDate] = useState<string>(formatDate(new Date()));
   const [weekOffset, setWeekOffset] = useState(0);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [clearingBlocked, setClearingBlocked] = useState(false);
-  const [clearingReservations, setClearingReservations] = useState(false);
 
   const getWeekForOffset = () => {
     const today = new Date();
@@ -72,24 +71,6 @@ export default function BarberAgenda() {
                 className="px-3 py-1.5 text-sm bg-gold hover:bg-goldLight disabled:opacity-50 rounded transition-colors text-surface font-semibold"
               >
                 {clearingBlocked ? '...' : 'Desbloquear todas las fechas'}
-              </button>
-            )}
-            {appointments.length > 0 && (
-              <button
-                type="button"
-                onClick={async () => {
-                  if (!confirm(`¿Eliminar todas las reservas (${appointments.length})? Esta acción no se puede deshacer.`)) return;
-                  setClearingReservations(true);
-                  try {
-                    await clearAllReservations();
-                  } finally {
-                    setClearingReservations(false);
-                  }
-                }}
-                disabled={clearingReservations}
-                className="px-3 py-1.5 text-sm bg-error hover:bg-error/90 disabled:opacity-50 rounded transition-colors text-white font-semibold"
-              >
-                {clearingReservations ? '...' : 'Eliminar todas las reservas'}
               </button>
             )}
             <button
@@ -159,7 +140,7 @@ export default function BarberAgenda() {
           <button
             onClick={handleToggleBlock}
             disabled={!!loadingAction}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors disabled:opacity-60 ${
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors disabled:opacity-60 ${
               isBlocked
                 ? 'bg-gold hover:bg-goldLight text-surface'
                 : 'bg-error/90 hover:bg-error text-white'
@@ -169,12 +150,12 @@ export default function BarberAgenda() {
               '...'
             ) : isBlocked ? (
               <>
-                <Unlock className="w-4 h-4" />
+                <Unlock className="w-3.5 h-3.5" />
                 Desbloquear día
               </>
             ) : (
               <>
-                <Lock className="w-4 h-4" />
+                <Lock className="w-3.5 h-3.5" />
                 Bloquear día
               </>
             )}

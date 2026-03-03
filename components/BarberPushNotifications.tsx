@@ -83,16 +83,12 @@ export default function BarberPushNotifications() {
 
   if (!slug || status === 'unsupported') return null;
 
+  if (status === 'enabled') return null;
+
   return (
     <div className="flex items-center gap-2">
       {message && <span className="text-sm text-textMuted">{message}</span>}
-      {status === 'enabled' ? (
-        <span className="flex items-center gap-1.5 text-sm text-gold">
-          <Bell className="w-4 h-4" />
-          Notificaciones activas
-        </span>
-      ) : (
-        <button
+      <button
           type="button"
           onClick={trySubscribe}
           disabled={status === 'loading'}
@@ -112,7 +108,6 @@ export default function BarberPushNotifications() {
             </>
           )}
         </button>
-      )}
     </div>
   );
 }

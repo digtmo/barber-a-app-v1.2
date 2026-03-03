@@ -140,10 +140,16 @@ export async function POST(
         .from("barber_push_subscriptions")
         .select("endpoint, p256dh, auth")
         .eq("barber_id", barber.id);
-      const clientName = (reservation.client_name ?? "").trim();
+      const clientName = (reservation.client_name ?? "").trim() || "Un cliente";
+      const timeStr = String(reservation.time ?? "").slice(0, 5);
+      const dateObj = new Date(reservation.date + "T12:00:00");
+      const dayName = dateObj.toLocaleDateString("es-ES", { weekday: "long" });
+      const dayNum = dateObj.getDate();
+      const month = dateObj.toLocaleDateString("es-ES", { month: "long" });
+      const body = `Nueva reserva: ${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${dayNum} ${month.charAt(0).toUpperCase() + month.slice(1)} a las ${timeStr} - ${clientName}`;
       const payload = {
         title: "Nueva reserva",
-        body: `${clientName || "Un cliente"} - ${reservation.date} ${reservation.time}`,
+        body,
         url: "/",
       };
       if (subs?.length) {
