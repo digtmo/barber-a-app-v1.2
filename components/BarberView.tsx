@@ -34,7 +34,14 @@ export default function BarberView({ onBackToClient }: { onBackToClient?: () => 
 
   const handleLogout = () => {
     logoutBarber();
-    onBackToClient?.();
+    // En modo PWA standalone no redirigimos: el componente re-renderiza al login.
+    // En navegador normal sí volvemos a la vista de cliente.
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+    if (!isStandalone) {
+      onBackToClient?.();
+    }
   };
 
   if (isLoadingBarberData) {

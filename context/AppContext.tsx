@@ -104,10 +104,29 @@ function generateTimeSlots(startTime: string, endTime: string, duration: number)
   return slots;
 }
 
+/** Decodifica el payload de un JWT sin verificar la firma (sólo lectura de claims). */
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch {
+    return null;
+  }
+}
+
 export function AppProvider({ children, slug }: { children: ReactNode; slug: string }) {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [barberConfig, setBarberConfig] = useState<BarberConfig>(defaultBarberConfig);
-  const [isBarberAuthenticated, setIsBarberAuthenticated] = useState(() => !!getToken());
+  const [isBarberAuthenticated, setIsBarberAuthenticated] = useState(() => {
+    const token = getToken();
+    if (!token) return false;
+    // Verificar que el token pertenece al slug de esta URL; si no, descartarlo.
+    const payload = decodeJwtPayload(token);
+    if (!payload || payload.slug !== slug) {
+      clearToken();
+      return false;
+    }
+    return true;
+  });
   const [isLoadingBarberData, setIsLoadingBarberData] = useState(true);
   const [barberDataError, setBarberDataError] = useState<string | null>(null);
 
@@ -273,17 +292,31 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
   const authenticateBarber = useCallback(async (email: string, password: string): Promise<boolean> => {
     try {
       const { token } = await apiLogin(email, password);
+      // Verificar que el token pertenece al slug de esta URL.
+      const payload = decodeJwtPayload(token);
+      const tokenSlug = payload?.slug as string | undefined;
+      if (tokenSlug && tokenSlug !== slug) {
+        // El barbero inició sesión desde la URL de otro barbero → redirigir a la suya.
+        const domain = process.env.NEXT_PUBLIC_BARBER_DOMAIN ?? 'tubarber.com';
+        window.location.href = `https://${tokenSlug}.${domain}/acceso`;
+        return false;
+      }
       setToken(token);
       setIsBarberAuthenticated(true);
+      // Recargar datos para mostrar la agenda del barbero autenticado, no la del slug de URL.
+      await refetchBarberData();
       return true;
     } catch {
       return false;
     }
-  }, []);
+  }, [slug, refetchBarberData]);
 
   const logoutBarber = useCallback(() => {
     clearToken();
     setIsBarberAuthenticated(false);
+    setAppointments([]);
+    setBarberConfig(defaultBarberConfig);
+    setBarberDataError(null);
   }, []);
 
   return (

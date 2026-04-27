@@ -38,17 +38,18 @@ self.addEventListener('notificationclick', (event) => {
   const url = event.notification.data?.url || '/acceso';
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      if (clientList.length) {
-        const c = clientList[0];
-        if (c.navigate) c.navigate(url);
-        c.focus();
-      } else if (self.clients.openWindow) {
-        self.clients.openWindow(url);
+      // Buscar una ventana del mismo origen para enfocarla y navegar.
+      for (const c of clientList) {
+        if (c.url.startsWith(self.location.origin)) {
+          c.focus();
+          if (c.navigate) return c.navigate(url);
+          return;
+        }
+      }
+      // Si no hay ventana abierta, abrir una nueva.
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(url);
       }
     })
   );
-});
-
-self.addEventListener('fetch', (event) => {
-  event.respondWith(fetch(event.request));
 });
