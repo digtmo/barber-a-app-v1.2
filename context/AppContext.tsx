@@ -19,6 +19,7 @@ import {
 
 interface AppContextType {
   slug: string;
+  displayName: string;
   appointments: Appointment[];
   barberConfig: BarberConfig;
   isBarberAuthenticated: boolean;
@@ -115,6 +116,7 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
 
 export function AppProvider({ children, slug }: { children: ReactNode; slug: string }) {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [displayName, setDisplayName] = useState<string>('');
   const [barberConfig, setBarberConfig] = useState<BarberConfig>(defaultBarberConfig);
   const [isBarberAuthenticated, setIsBarberAuthenticated] = useState(() => {
     const token = getToken();
@@ -140,6 +142,7 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
     setBarberDataError(null);
     try {
       const data = await apiFetchBarberData(slug);
+      setDisplayName(data.display_name ?? '');
       setBarberConfig(mapApiToBarberConfig(data));
       setAppointments(mapApiReservationsToAppointments(data.reservations));
     } catch (e) {
@@ -314,6 +317,7 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
   const logoutBarber = useCallback(() => {
     clearToken();
     setIsBarberAuthenticated(false);
+    setDisplayName('');
     setAppointments([]);
     setBarberConfig(defaultBarberConfig);
     setBarberDataError(null);
@@ -323,6 +327,7 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
     <AppContext.Provider
       value={{
         slug,
+        displayName,
         appointments,
         barberConfig,
         isBarberAuthenticated,

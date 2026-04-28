@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, Settings, Calendar as CalendarIcon } from 'lucide-react';
+import { LogOut, Settings, Calendar as CalendarIcon, Scissors } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import BarberConfig from './BarberConfig';
 import BarberAgenda from './BarberAgenda';
@@ -9,7 +9,7 @@ import BarberPushNotifications from './BarberPushNotifications';
 import InstallPWAButton from './InstallPWAButton';
 
 export default function BarberView({ onBackToClient }: { onBackToClient?: () => void }) {
-  const { barberConfig, logoutBarber, isLoadingBarberData, barberDataError, refetchBarberData } = useApp();
+  const { barberConfig, displayName, logoutBarber, isLoadingBarberData, barberDataError, refetchBarberData } = useApp();
   const [activeTab, setActiveTab] = useState<'agenda' | 'config'>(
     barberConfig.isConfigured ? 'agenda' : 'config'
   );
@@ -77,7 +77,7 @@ export default function BarberView({ onBackToClient }: { onBackToClient?: () => 
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold text-gold font-display">
-              PANEL BARBERO
+              {displayName ? displayName.toUpperCase() : 'PANEL BARBERO'}
             </h1>
             <p className="text-textMuted text-sm mt-1">Gestiona tu agenda</p>
           </div>
@@ -96,9 +96,14 @@ export default function BarberView({ onBackToClient }: { onBackToClient?: () => 
 
       {!barberConfig.isConfigured ? (
         <div className="max-w-2xl mx-auto p-6">
-          <div className="bg-gold/10 border border-gold rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-bold text-gold mb-2 font-display">Configuración requerida</h2>
-            <p className="text-text">Debes configurar tu horario de atención antes de comenzar a recibir reservas.</p>
+          <div className="bg-gold/10 border border-gold rounded-lg p-6 mb-6 flex items-start gap-4">
+            <div className="flex items-center justify-center w-12 h-12 bg-gold/20 rounded-full flex-shrink-0">
+              <Scissors className="w-6 h-6 text-gold" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gold mb-1 font-display">¡Bienvenido{displayName ? `, ${displayName}` : ''}!</h2>
+              <p className="text-text text-sm">Para comenzar a recibir reservas, configurá tu horario de atención. Solo tomará un minuto.</p>
+            </div>
           </div>
           <BarberConfig onSwitchToAgenda={() => setActiveTab('agenda')} />
         </div>

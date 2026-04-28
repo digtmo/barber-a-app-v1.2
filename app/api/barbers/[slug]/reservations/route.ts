@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { buildSlotsByDuration, hasOverlap } from "@/lib/time";
 import { sendPushNotification, isPushConfigured } from "@/lib/push";
+import { sendReservationConfirmation, isEmailConfigured } from "@/lib/email";
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const TIME_REGEX = /^([01]?\d|2[0-3]):[0-5]\d$/;
@@ -14,7 +15,7 @@ export async function POST(
     const { slug } = await params;
     const { data: barber } = await supabaseAdmin
       .from("barbers")
-      .select("id")
+      .select("id, display_name")
       .eq("slug", slug)
       .maybeSingle();
     if (!barber) {
@@ -132,6 +133,18 @@ export async function POST(
         { error: insertError.message },
         { status: 500 }
       );
+    }
+
+    // Email de confirmación al cliente (si proporcionó email y Resend está configurado)
+    if (isEmailConfigured() && reservation.client_email) {
+      sendReservationConfirmation({
+        clientName: reservation.client_name,
+        clientEmail: reservation.client_email,
+        barberName: barber.display_name ?? slug,
+        barberSlug: slug,
+        date: reservation.date,
+        time: String(reservation.time ?? '').slice(0, 5),
+      }).catch(() => {});
     }
 
     // Notificación push al barbero (si tiene suscripción y VAPID configurado)
