@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Lock, AlertCircle } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import Spinner from './Spinner';
+import Image from 'next/image';
 
 export default function BarberLogin({ onBackToClient }: { onBackToClient?: () => void }) {
   const { authenticateBarber } = useApp();
@@ -35,9 +36,9 @@ export default function BarberLogin({ onBackToClient }: { onBackToClient?: () =>
     <div className="min-h-screen bg-surface flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-gold mb-2 font-display">
-            BARBER SHOP
-          </h1>
+          <div className="flex justify-center mb-3">
+            <Image src="/logo_tu_barber.png" alt="TuBarber" width={220} height={70} priority />
+          </div>
           <p className="text-textMuted">Panel de administración</p>
         </div>
 

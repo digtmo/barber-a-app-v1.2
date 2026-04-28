@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { UserPlus } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const BARBER_DOMAIN = process.env.NEXT_PUBLIC_BARBER_DOMAIN ?? 'tubarber.com';
 
@@ -87,9 +88,9 @@ export default function RegistroBarberoForm() {
   return (
     <div className="max-w-md w-full">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gold mb-2 font-display">
-          REGISTRAR BARBERÍA
-        </h1>
+        <div className="flex justify-center mb-3">
+          <Image src="/logo_tu_barber.png" alt="TuBarber" width={220} height={70} priority />
+        </div>
         <p className="text-textMuted">Crea tu página y agenda en {BARBER_DOMAIN}</p>
       </div>
 

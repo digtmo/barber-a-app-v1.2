@@ -1,11 +1,12 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-surface text-text flex flex-col items-center justify-center p-6">
-      <h1 className="text-5xl font-bold text-gold mb-4 font-display">
-        BARBER
-      </h1>
+      <div className="mb-6">
+        <Image src="/logo_tu_barber.png" alt="TuBarber" width={280} height={90} priority />
+      </div>
       <p className="text-textMuted text-center max-w-md mb-10">
         Para reservar, entra a la página de tu barbero: <strong className="text-goldLight">[nombre].tubarber.com</strong>
         <br />

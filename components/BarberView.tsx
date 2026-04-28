@@ -7,6 +7,7 @@ import BarberConfig from './BarberConfig';
 import BarberAgenda from './BarberAgenda';
 import BarberPushNotifications from './BarberPushNotifications';
 import InstallPWAButton from './InstallPWAButton';
+import Image from 'next/image';
 
 export default function BarberView({ onBackToClient }: { onBackToClient?: () => void }) {
   const { barberConfig, displayName, logoutBarber, isLoadingBarberData, barberDataError, refetchBarberData } = useApp();
@@ -76,10 +77,8 @@ export default function BarberView({ onBackToClient }: { onBackToClient?: () => 
       <header className="bg-surfaceAlt border-b border-subtle p-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-gold font-display">
-              {displayName ? displayName.toUpperCase() : 'PANEL BARBERO'}
-            </h1>
-            <p className="text-textMuted text-sm mt-1">Gestiona tu agenda</p>
+            <Image src="/logo_tu_barber.png" alt="TuBarber" width={160} height={50} priority />
+            <p className="text-text font-semibold mt-1">{displayName || 'Panel Barbero'}</p>
           </div>
           <div className="flex items-center gap-3">
             <BarberPushNotifications />
