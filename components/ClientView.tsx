@@ -8,7 +8,7 @@ import Modal from './Modal';
 import Spinner from './Spinner';
 
 export default function ClientView() {
-  const { getTimeSlotsForDate, addAppointment, barberConfig, isLoadingBarberData, barberDataError } = useApp();
+  const { getTimeSlotsForDate, addAppointment, barberConfig, displayName, isLoadingBarberData, barberDataError } = useApp();
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [weekOffset, setWeekOffset] = useState(0);
@@ -123,7 +123,7 @@ export default function ClientView() {
     <div className="min-h-screen bg-surface text-text">
       <header className="bg-surfaceAlt border-b border-subtle p-6">
         <h1 className="text-4xl font-bold text-gold font-display">
-          {barberConfig.displayName || 'BARBER SHOP'}
+          {displayName || 'BARBER SHOP'}
         </h1>
         <p className="text-textMuted text-sm mt-1">Reserva tu turno</p>
       </header>
