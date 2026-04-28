@@ -173,7 +173,7 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
     let realtimeActive = false;
 
     let supabase: ReturnType<typeof getSupabaseBrowser> | null = null;
-    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let channel: ReturnType<ReturnType<typeof getSupabaseBrowser>['channel']> | null = null;
 
     try {
       supabase = getSupabaseBrowser();
