@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { supabaseAdmin } from "@/lib/supabase";
 import { signBarberToken } from "@/lib/jwt";
+import { sendWelcomeEmail, isEmailConfigured } from "@/lib/email";
 
 const SLUG_REGEX = /^[a-z0-9-]+$/;
 
@@ -77,6 +78,16 @@ export async function POST(request: NextRequest) {
         { error: scheduleError?.message ?? subError?.message ?? "Error al crear datos" },
         { status: 500 }
       );
+    }
+
+    // Email de bienvenida (no bloquea la respuesta si falla)
+    if (isEmailConfigured()) {
+      sendWelcomeEmail({
+        displayName: display_name,
+        email,
+        slug,
+        trialDays: 14,
+      }).catch(() => {});
     }
 
     const token = signBarberToken({ barberId: barber.id, slug });
