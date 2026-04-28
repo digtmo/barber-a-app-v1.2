@@ -580,11 +580,9 @@
   #registro { background: var(--dark2); }
 
   .registro-inner {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 4rem; align-items: center;
-    margin-top: 3rem;
+    max-width: 560px;
+    margin: 3rem auto 0;
   }
-  @media (max-width: 800px) { .registro-inner { grid-template-columns: 1fr; } }
 
   .registro-steps { }
   .registro-step {
@@ -1210,8 +1208,8 @@
 
 <!-- REGISTRO BARBERO -->
 <section id="registro">
-  <div class="section-label reveal">Tu agenda de turnos online</div>
-  <h2 class="section-title reveal">Tu barbería en Chile,<br>online en menos de <em style="color:var(--gold);font-style:normal;">5 minutos</em></h2>
+  <div class="section-label reveal" style="text-align:center;">Tu agenda de turnos online</div>
+  <h2 class="section-title reveal" style="text-align:center;">Tu barbería en Chile,<br>online en menos de <em style="color:var(--gold);font-style:normal;">5 minutos</em></h2>
   <div class="registro-inner reveal">
     <div class="registro-steps">
       <div class="registro-step">
@@ -1250,7 +1248,7 @@
           <span>Tu subdominio empieza a recibir reservas. Comparte el link y listo.</span>
         </div>
       </div>
-      <div class="time-badge">
+      <div class="time-badge" style="margin:1.5rem auto 0;width:fit-content;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Proceso completo: ~5 minutos
       </div>
@@ -1454,9 +1452,9 @@
 
 <!-- FAQ (Rich Results para Google) -->
 <section id="faq" style="background:var(--dark2);padding:6rem 5vw;">
-  <div class="section-label reveal">FAQ</div>
-  <h2 class="section-title reveal">Preguntas frecuentes</h2>
-  <div style="max-width:720px;margin-top:2.5rem;" id="faq-list">
+  <div class="section-label reveal" style="text-align:center;">FAQ</div>
+  <h2 class="section-title reveal" style="text-align:center;">Preguntas frecuentes</h2>
+  <div style="max-width:720px;margin:2.5rem auto 0;" id="faq-list">
 
     <div class="faq-item reveal">
       <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
