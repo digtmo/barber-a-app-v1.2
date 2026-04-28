@@ -123,7 +123,7 @@ export default function ClientView() {
     <div className="min-h-screen bg-surface text-text">
       <header className="bg-surfaceAlt border-b border-subtle p-6">
         <h1 className="text-4xl font-bold text-gold font-display">
-          BARBER SHOP
+          {barberConfig.displayName || 'BARBER SHOP'}
         </h1>
         <p className="text-textMuted text-sm mt-1">Reserva tu turno</p>
       </header>
