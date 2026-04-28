@@ -170,63 +170,84 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
   // Tiempo real: suscripción Supabase Realtime filtrada por barbero
   useEffect(() => {
     if (!barberId) return;
-    const supabase = getSupabaseBrowser();
-    const channel = supabase
-      .channel(`reservations:${barberId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'reservations',
-          filter: `barber_id=eq.${barberId}`,
-        },
-        (payload) => {
-          if (payload.eventType === 'INSERT') {
-            const r = payload.new as ApiReservation;
-            setAppointments((prev) => {
-              // Evitar duplicado si ya fue añadido de forma optimista
-              if (prev.some((a) => a.id === r.id)) return prev;
-              return [
-                ...prev,
-                {
-                  id: r.id,
-                  date: r.date,
-                  timeSlot: toHHmm(r.time),
-                  clientName: r.client_name,
-                  clientPhone: r.client_phone ?? '',
-                  clientEmail: r.client_email ?? '',
-                },
-              ];
-            });
-          } else if (payload.eventType === 'DELETE') {
-            const r = payload.old as { id: string };
-            setAppointments((prev) => prev.filter((a) => a.id !== r.id));
-          } else if (payload.eventType === 'UPDATE') {
-            const r = payload.new as ApiReservation;
-            setAppointments((prev) =>
-              prev.map((a) =>
-                a.id === r.id
-                  ? {
-                      id: r.id,
-                      date: r.date,
-                      timeSlot: toHHmm(r.time),
-                      clientName: r.client_name,
-                      clientPhone: r.client_phone ?? '',
-                      clientEmail: r.client_email ?? '',
-                    }
-                  : a
-              )
-            );
+    let realtimeActive = false;
+
+    let supabase: ReturnType<typeof getSupabaseBrowser> | null = null;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    try {
+      supabase = getSupabaseBrowser();
+      channel = supabase
+        .channel(`reservations:${barberId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'reservations',
+            filter: `barber_id=eq.${barberId}`,
+          },
+          (payload) => {
+            realtimeActive = true;
+            if (payload.eventType === 'INSERT') {
+              const r = payload.new as ApiReservation;
+              setAppointments((prev) => {
+                if (prev.some((a) => a.id === r.id)) return prev;
+                return [
+                  ...prev,
+                  {
+                    id: r.id,
+                    date: r.date,
+                    timeSlot: toHHmm(r.time),
+                    clientName: r.client_name,
+                    clientPhone: r.client_phone ?? '',
+                    clientEmail: r.client_email ?? '',
+                  },
+                ];
+              });
+            } else if (payload.eventType === 'DELETE') {
+              const r = payload.old as { id: string };
+              setAppointments((prev) => prev.filter((a) => a.id !== r.id));
+            } else if (payload.eventType === 'UPDATE') {
+              const r = payload.new as ApiReservation;
+              setAppointments((prev) =>
+                prev.map((a) =>
+                  a.id === r.id
+                    ? {
+                        id: r.id,
+                        date: r.date,
+                        timeSlot: toHHmm(r.time),
+                        clientName: r.client_name,
+                        clientPhone: r.client_phone ?? '',
+                        clientEmail: r.client_email ?? '',
+                      }
+                    : a
+                )
+              );
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            realtimeActive = true;
+          }
+        });
+    } catch {
+      // NEXT_PUBLIC_SUPABASE_ANON_KEY no configurado — solo polling
+    }
+
+    // Polling cada 5 segundos como fallback (o complemento) al realtime
+    const interval = setInterval(() => {
+      if (!realtimeActive) {
+        refetchBarberData();
+      }
+    }, 5000);
 
     return () => {
-      supabase.removeChannel(channel);
+      clearInterval(interval);
+      if (supabase && channel) supabase.removeChannel(channel);
     };
-  }, [barberId]);
+  }, [barberId, refetchBarberData]);
 
   const getTimeSlotsForDate = useCallback(
     (date: string): TimeSlot[] => {
