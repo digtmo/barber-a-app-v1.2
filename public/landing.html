@@ -245,7 +245,7 @@
           "name": "¿Cómo puedo tener una agenda online para mi barbería en Chile?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Con TuBarber puedes tener tu agenda online en menos de 5 minutos: regístrate, elige tu slug (por ejemplo, migarberia.tubarber.com), configura tu horario y listo. Tus clientes ya pueden reservar su turno desde el celular, sin descargar ninguna app."
+            "text": "Con TuBarber puedes tener tu agenda online en menos de 5 minutos: regístrate, elige tu slug (por ejemplo, mibarberia.tubarber.com), configura tu horario y listo. Tus clientes ya pueden reservar su turno desde el celular, sin descargar ninguna app."
           }
         }
       ]
@@ -779,50 +779,86 @@
     display: flex; align-items: center; justify-content: center; gap: 0.4rem;
   }
 
-  /* COUNTRY SELECTOR */
-  .country-selector-wrap {
-    margin-bottom: 2.5rem;
+  /* CLIENT FLOW */
+  .client-flow {
+    max-width: 540px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
   }
-  .country-selector-label {
-    font-size: 0.8rem; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 0.12em;
-    margin-bottom: 1rem;
-  }
-  .country-flags {
-    display: flex; flex-wrap: wrap; gap: 0.6rem;
-  }
-  .flag-btn {
-    display: flex; align-items: center; gap: 0.55rem;
-    background: var(--dark3);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 0.45rem 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: var(--muted);
-    font-size: 0.8rem;
-    font-family: var(--sans);
-    white-space: nowrap;
-  }
-  .flag-btn:hover {
-    border-color: rgba(201,168,76,0.4);
-    color: var(--text);
-  }
-  .flag-btn.active {
-    border-color: var(--gold);
-    background: rgba(201,168,76,0.08);
-    color: var(--gold);
-    box-shadow: 0 0 0 1px rgba(201,168,76,0.15);
-  }
-  .flag-btn .flag-emoji { font-size: 1.1rem; line-height: 1; }
-  .flag-btn .flag-name { font-weight: 500; }
 
-  /* Price transition */
-  .pricing-price {
-    transition: opacity 0.25s, transform 0.25s;
+  .cf-step {
+    display: flex;
+    gap: 1.2rem;
+    align-items: flex-start;
+    padding: 1.4rem 1.6rem;
+    background: var(--dark3);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
   }
-  .pricing-price.updating {
-    opacity: 0; transform: translateY(-6px);
+
+  .cf-step::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+    background: var(--gold);
+    opacity: 0;
+    transition: opacity 0.25s;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .cf-step:hover {
+    border-color: rgba(201,168,76,0.25);
+    transform: translateX(5px);
+  }
+  .cf-step:hover::after { opacity: 1; }
+
+  .cf-step--success {
+    border-color: rgba(201,168,76,0.2);
+    background: rgba(201,168,76,0.05);
+  }
+  .cf-step--success::after { opacity: 0.5; }
+
+  .cf-icon-circle {
+    width: 52px; height: 52px; flex-shrink: 0;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.45rem;
+    position: relative;
+  }
+  .cf-icon-circle--gold {
+    background: rgba(201,168,76,0.18);
+    border-color: rgba(201,168,76,0.4);
+  }
+
+  .cf-num {
+    position: absolute;
+    top: -8px; right: -8px;
+    width: 20px; height: 20px;
+    background: var(--gold);
+    color: var(--dark);
+    border-radius: 50%;
+    font-size: 0.65rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+  }
+
+  .cf-body { flex: 1; padding-top: 3px; }
+  .cf-body h3 { font-size: 0.98rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+  .cf-body p { font-size: 0.855rem; color: var(--muted); line-height: 1.55; }
+
+  .cf-arrow {
+    height: 22px;
+    display: flex; align-items: center;
+    padding-left: calc(1.6rem + 25px);
+    color: rgba(201,168,76,0.4);
   }
 
   /* CTA FINAL */
@@ -1128,29 +1164,45 @@
 
 <!-- CÓMO FUNCIONA -->
 <section id="como-funciona">
-  <div class="section-label reveal">Cómo funciona</div>
-  <h2 class="section-title reveal">Reserva de turno online.<br>Simple para tu cliente.</h2>
-  <div class="flow-grid reveal" style="grid-template-columns: 1fr; max-width: 520px; margin-left: auto; margin-right: auto;">
-    <div class="flow-col">
-      <div class="flow-col-title">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Flujo del cliente
+  <div class="section-label reveal" style="text-align:center;">Cómo funciona</div>
+  <h2 class="section-title reveal" style="text-align:center;">Tu turno en segundos.<br>Sin apps ni contraseñas.</h2>
+  <p style="color:var(--muted);max-width:420px;margin:0.8rem auto 2.5rem;font-size:0.95rem;text-align:center;line-height:1.6;" class="reveal">Así de fácil reserva un cliente en tu barbería:</p>
+  <div class="client-flow reveal">
+    <div class="cf-step">
+      <div class="cf-icon-circle"><span>📲</span><span class="cf-num">1</span></div>
+      <div class="cf-body">
+        <h3>Recibe el link</h3>
+        <p>Tu barbero comparte su agenda por WhatsApp o Instagram. Un clic y ya está dentro.</p>
       </div>
-      <div class="flow-step">
-        <div class="flow-step-num">1</div>
-        <div class="flow-step-text"><strong>Entra a tu link</strong>Recibe el enlace de tu barbería por WhatsApp, Instagram o cualquier canal.</div>
+    </div>
+    <div class="cf-arrow">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="cf-step">
+      <div class="cf-icon-circle"><span>📅</span><span class="cf-num">2</span></div>
+      <div class="cf-body">
+        <h3>Elige día y hora</h3>
+        <p>Ve los horarios disponibles en tiempo real y elige el que más le acomoda.</p>
       </div>
-      <div class="flow-step">
-        <div class="flow-step-num">2</div>
-        <div class="flow-step-text"><strong>Elige día y hora</strong>Ve el calendario en tiempo real con los horarios disponibles.</div>
+    </div>
+    <div class="cf-arrow">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="cf-step">
+      <div class="cf-icon-circle"><span>✍️</span><span class="cf-num">3</span></div>
+      <div class="cf-body">
+        <h3>Solo nombre, teléfono y email</h3>
+        <p>Sin registros, sin contraseñas. Datos básicos y listo. Tarda menos de 30 segundos.</p>
       </div>
-      <div class="flow-step">
-        <div class="flow-step-num">3</div>
-        <div class="flow-step-text"><strong>Solo nombre, teléfono y email</strong>Sin crear cuenta. Sin contraseñas. Sin fricción.</div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-step-num">4</div>
-        <div class="flow-step-text"><strong>¡Listo!</strong>Confirma y la reserva queda registrada al instante.</div>
+    </div>
+    <div class="cf-arrow">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="cf-step cf-step--success">
+      <div class="cf-icon-circle cf-icon-circle--gold"><span>🎉</span><span class="cf-num">4</span></div>
+      <div class="cf-body">
+        <h3>¡Turno confirmado al instante!</h3>
+        <p>La reserva queda registrada y el cliente recibe confirmación por email. Tu agenda se actualiza sola.</p>
       </div>
     </div>
   </div>
@@ -1168,7 +1220,7 @@
         </div>
         <div class="r-step-text">
           <strong>Nombre de tu negocio + slug único</strong>
-          <span>Elige tu subdominio personalizado, ej. <strong style="color:var(--gold)">migarberia.tubarber.com</strong>. Solo lo tuyo, exclusivo para ti.</span>
+          <span>Elige tu subdominio personalizado, ej. <strong style="color:var(--gold)">mibarberia.tubarber.com</strong>. Solo lo tuyo, exclusivo para ti.</span>
         </div>
       </div>
       <div class="registro-step">
@@ -1310,33 +1362,11 @@
 <section id="precios">
   <div class="section-label reveal">Precios en Chile</div>
   <h2 class="section-title reveal">Precio en pesos chilenos,<br>sin sorpresas</h2>
-  <!-- COUNTRY SELECTOR -->
-  <div class="country-selector-wrap reveal">
-    <p class="country-selector-label">Selecciona tu país para ver el precio local</p>
-    <div class="country-flags" id="country-flags">
-      <button class="flag-btn active" data-country="CL" onclick="selectCountry('CL',this)"><span class="flag-emoji">🇨🇱</span><span class="flag-name">Chile</span></button>
-      <button class="flag-btn" data-country="AR" onclick="selectCountry('AR',this)"><span class="flag-emoji">🇦🇷</span><span class="flag-name">Argentina</span></button>
-      <button class="flag-btn" data-country="CO" onclick="selectCountry('CO',this)"><span class="flag-emoji">🇨🇴</span><span class="flag-name">Colombia</span></button>
-      <button class="flag-btn" data-country="MX" onclick="selectCountry('MX',this)"><span class="flag-emoji">🇲🇽</span><span class="flag-name">México</span></button>
-      <button class="flag-btn" data-country="PE" onclick="selectCountry('PE',this)"><span class="flag-emoji">🇵🇪</span><span class="flag-name">Perú</span></button>
-      <button class="flag-btn" data-country="EC" onclick="selectCountry('EC',this)"><span class="flag-emoji">🇪🇨</span><span class="flag-name">Ecuador</span></button>
-      <button class="flag-btn" data-country="BO" onclick="selectCountry('BO',this)"><span class="flag-emoji">🇧🇴</span><span class="flag-name">Bolivia</span></button>
-      <button class="flag-btn" data-country="PY" onclick="selectCountry('PY',this)"><span class="flag-emoji">🇵🇾</span><span class="flag-name">Paraguay</span></button>
-      <button class="flag-btn" data-country="UY" onclick="selectCountry('UY',this)"><span class="flag-emoji">🇺🇾</span><span class="flag-name">Uruguay</span></button>
-      <button class="flag-btn" data-country="VE" onclick="selectCountry('VE',this)"><span class="flag-emoji">🇻🇪</span><span class="flag-name">Venezuela</span></button>
-      <button class="flag-btn" data-country="CR" onclick="selectCountry('CR',this)"><span class="flag-emoji">🇨🇷</span><span class="flag-name">Costa Rica</span></button>
-      <button class="flag-btn" data-country="DO" onclick="selectCountry('DO',this)"><span class="flag-emoji">🇩🇴</span><span class="flag-name">Rep. Dom.</span></button>
-      <button class="flag-btn" data-country="GT" onclick="selectCountry('GT',this)"><span class="flag-emoji">🇬🇹</span><span class="flag-name">Guatemala</span></button>
-      <button class="flag-btn" data-country="PA" onclick="selectCountry('PA',this)"><span class="flag-emoji">🇵🇦</span><span class="flag-name">Panamá</span></button>
-      <button class="flag-btn" data-country="BR" onclick="selectCountry('BR',this)"><span class="flag-emoji">🇧🇷</span><span class="flag-name">Brasil</span></button>
-    </div>
-  </div>
-
-  <div class="pricing-grid reveal" style="grid-template-columns:1fr;max-width:480px;">
+  <div class="pricing-grid reveal" style="grid-template-columns:1fr;max-width:480px;margin-left:auto;margin-right:auto;">
     <div class="pricing-card popular">
       <div class="popular-badge">★ Plan Pro</div>
       <div class="pricing-plan">Pro</div>
-      <div class="pricing-price" id="price-pro">$10.000 <span id="price-currency">CLP / mes</span></div>
+      <div class="pricing-price">$10.000 <span>CLP / mes</span></div>
       <p class="pricing-desc">El programa completo para gestionar tu barbería en Chile: agenda, turnos, reservas y notificaciones.</p>
       <ul class="pricing-features">
         <li>
@@ -1708,42 +1738,6 @@
       if (document.getElementById('modal-form').style.display !== 'none') handleRegister();
     }
   });
-
-  // COUNTRY PRICING
-  const PRICING = {
-    CL: { symbol: '$', amount: '10.000',  currency: 'CLP / mes', note: '' },
-    AR: { symbol: '$', amount: '3.500',   currency: 'ARS / mes', note: '' },
-    CO: { symbol: '$', amount: '15.000',  currency: 'COP / mes', note: '' },
-    MX: { symbol: '$', amount: '60',      currency: 'MXN / mes', note: '' },
-    PE: { symbol: 'S/', amount: '12',     currency: 'PEN / mes', note: '' },
-    EC: { symbol: '$', amount: '3',       currency: 'USD / mes', note: '' },
-    BO: { symbol: 'Bs.', amount: '20',   currency: 'BOB / mes', note: '' },
-    PY: { symbol: '₲', amount: '22.000', currency: 'PYG / mes', note: '' },
-    UY: { symbol: '$', amount: '120',     currency: 'UYU / mes', note: '' },
-    VE: { symbol: '$', amount: '3',       currency: 'USD / mes', note: '' },
-    CR: { symbol: '₡', amount: '1.500',  currency: 'CRC / mes', note: '' },
-    DO: { symbol: 'RD$', amount: '170',  currency: 'DOP / mes', note: '' },
-    GT: { symbol: 'Q', amount: '24',     currency: 'GTQ / mes', note: '' },
-    PA: { symbol: '$', amount: '3',      currency: 'USD / mes', note: '' },
-    BR: { symbol: 'R$', amount: '15',    currency: 'BRL / mes', note: '' },
-  };
-
-  function selectCountry(code, btn) {
-    // Update active button
-    document.querySelectorAll('.flag-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    const p = PRICING[code];
-    const proPriceEl = document.getElementById('price-pro');
-
-    // Animate out
-    proPriceEl.classList.add('updating');
-    setTimeout(() => {
-      document.getElementById('price-currency').textContent = p.currency;
-      proPriceEl.innerHTML = `${p.symbol}${p.amount} <span id="price-currency">${p.currency}</span>`;
-      proPriceEl.classList.remove('updating');
-    }, 220);
-  }
 
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {

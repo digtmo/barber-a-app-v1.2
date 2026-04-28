@@ -120,7 +120,7 @@ function buildEmailHtml(data: ReservationEmailData): string {
                       <tr>
                         <td style="padding:14px 16px;background-color:rgba(255,255,255,0.04);border-radius:8px;border-left:3px solid #C9A84C;">
                           <p style="margin:0 0 3px;font-size:11px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Hora</p>
-                          <p style="margin:0;font-size:16px;font-weight:700;color:#F5F5F0;">${data.time} hs</p>
+                          <p style="margin:0;font-size:16px;font-weight:700;color:#F5F5F0;">${data.time} hrs</p>
                         </td>
                       </tr>
                     </table>
@@ -139,7 +139,7 @@ function buildEmailHtml(data: ReservationEmailData): string {
                 <tr>
                   <td align="center" style="padding-bottom:28px;">
                     <p style="margin:0;font-size:13px;color:#888888;line-height:1.6;">
-                      Si necesitás cancelar o reprogramar, contactá directamente con tu barbero.
+                      Si necesitas cancelar o reprogramar, contacta directamente con tu barbero.
                     </p>
                   </td>
                 </tr>
@@ -239,7 +239,7 @@ function buildWelcomeEmailHtml(data: WelcomeEmailData): string {
                 <tr>
                   <td align="center" style="padding-bottom:32px;">
                     <p style="margin:0;font-size:14px;color:#999999;">
-                      Tu barbería online ya está lista. Empezá a recibir reservas hoy.
+                      Tu barbería online ya está lista. Empieza a recibir reservas hoy.
                     </p>
                   </td>
                 </tr>
@@ -259,7 +259,7 @@ function buildWelcomeEmailHtml(data: WelcomeEmailData): string {
                         <td style="padding:14px 16px;background-color:rgba(255,255,255,0.04);border-radius:8px;border-left:3px solid #C9A84C;">
                           <p style="margin:0 0 3px;font-size:11px;color:#888888;text-transform:uppercase;letter-spacing:1px;">Tu link de reservas</p>
                           <a href="${publicUrl}" style="margin:0;font-size:15px;font-weight:700;color:#C9A84C;text-decoration:none;">${data.slug}.${domain}</a>
-                          <p style="margin:4px 0 0;font-size:12px;color:#888888;">Compartí este link con tus clientes</p>
+                          <p style="margin:4px 0 0;font-size:12px;color:#888888;">Comparte este link con tus clientes</p>
                         </td>
                       </tr>
                     </table>
@@ -288,17 +288,17 @@ function buildWelcomeEmailHtml(data: WelcomeEmailData): string {
                     <table width="100%" cellpadding="0" cellspacing="0">
                       <tr>
                         <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
-                          <p style="margin:0;font-size:13px;color:#F5F5F0;"><span style="color:#C9A84C;font-weight:700;margin-right:8px;">1.</span>Ingresá a tu panel y configurá tu horario</p>
+                          <p style="margin:0;font-size:13px;color:#F5F5F0;"><span style="color:#C9A84C;font-weight:700;margin-right:8px;">1.</span>Ingresa a tu panel y configura tu horario</p>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
-                          <p style="margin:0;font-size:13px;color:#F5F5F0;"><span style="color:#C9A84C;font-weight:700;margin-right:8px;">2.</span>Compartí tu link con tus clientes</p>
+                          <p style="margin:0;font-size:13px;color:#F5F5F0;"><span style="color:#C9A84C;font-weight:700;margin-right:8px;">2.</span>Comparte tu link con tus clientes</p>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding:10px 0;">
-                          <p style="margin:0;font-size:13px;color:#F5F5F0;"><span style="color:#C9A84C;font-weight:700;margin-right:8px;">3.</span>Activá las notificaciones push para recibir alertas</p>
+                          <p style="margin:0;font-size:13px;color:#F5F5F0;"><span style="color:#C9A84C;font-weight:700;margin-right:8px;">3.</span>Activa las notificaciones push para recibir alertas</p>
                         </td>
                       </tr>
                     </table>
