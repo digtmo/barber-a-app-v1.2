@@ -29,3 +29,21 @@ export const supabaseAdmin = new Proxy({} as SupabaseClient, {
     return (getSupabaseAdmin() as unknown as Record<string | symbol, unknown>)[prop];
   },
 });
+
+let _browser: SupabaseClient | null = null;
+
+/**
+ * Cliente Supabase con anon key para usar en el navegador.
+ * Requiere NEXT_PUBLIC_SUPABASE_ANON_KEY.
+ * Usado para suscripciones Realtime.
+ */
+export function getSupabaseBrowser(): SupabaseClient {
+  if (_browser) return _browser;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) {
+    throw new Error("Faltan NEXT_PUBLIC_SUPABASE_URL o NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  }
+  _browser = createClient(url, anonKey);
+  return _browser;
+}

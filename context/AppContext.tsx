@@ -15,7 +15,9 @@ import {
   createReservation,
   deleteReservation as apiDeleteReservation,
   clearAllReservations as apiClearAllReservations,
+  type ApiReservation,
 } from '@/lib/barberApiClient';
+import { getSupabaseBrowser } from '@/lib/supabase';
 
 interface AppContextType {
   slug: string;
@@ -116,6 +118,7 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
 
 export function AppProvider({ children, slug }: { children: ReactNode; slug: string }) {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [barberId, setBarberId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>('');
   const [barberConfig, setBarberConfig] = useState<BarberConfig>(defaultBarberConfig);
   const [isBarberAuthenticated, setIsBarberAuthenticated] = useState(() => {
@@ -143,6 +146,7 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
     try {
       const data = await apiFetchBarberData(slug);
       setDisplayName(data.display_name ?? '');
+      setBarberId(data.id);
       setBarberConfig(mapApiToBarberConfig(data));
       setAppointments(mapApiReservationsToAppointments(data.reservations));
     } catch (e) {
@@ -162,6 +166,67 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
   }, [refetchBarberData]);
+
+  // Tiempo real: suscripción Supabase Realtime filtrada por barbero
+  useEffect(() => {
+    if (!barberId) return;
+    const supabase = getSupabaseBrowser();
+    const channel = supabase
+      .channel(`reservations:${barberId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'reservations',
+          filter: `barber_id=eq.${barberId}`,
+        },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const r = payload.new as ApiReservation;
+            setAppointments((prev) => {
+              // Evitar duplicado si ya fue añadido de forma optimista
+              if (prev.some((a) => a.id === r.id)) return prev;
+              return [
+                ...prev,
+                {
+                  id: r.id,
+                  date: r.date,
+                  timeSlot: toHHmm(r.time),
+                  clientName: r.client_name,
+                  clientPhone: r.client_phone ?? '',
+                  clientEmail: r.client_email ?? '',
+                },
+              ];
+            });
+          } else if (payload.eventType === 'DELETE') {
+            const r = payload.old as { id: string };
+            setAppointments((prev) => prev.filter((a) => a.id !== r.id));
+          } else if (payload.eventType === 'UPDATE') {
+            const r = payload.new as ApiReservation;
+            setAppointments((prev) =>
+              prev.map((a) =>
+                a.id === r.id
+                  ? {
+                      id: r.id,
+                      date: r.date,
+                      timeSlot: toHHmm(r.time),
+                      clientName: r.client_name,
+                      clientPhone: r.client_phone ?? '',
+                      clientEmail: r.client_email ?? '',
+                    }
+                  : a
+              )
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [barberId]);
 
   const getTimeSlotsForDate = useCallback(
     (date: string): TimeSlot[] => {
