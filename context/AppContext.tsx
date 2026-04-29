@@ -156,6 +156,18 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
     }
   }, [slug]);
 
+  // Refresco silencioso: actualiza datos sin activar el spinner de carga
+  const silentRefetch = useCallback(async () => {
+    if (!slug) return;
+    try {
+      const data = await apiFetchBarberData(slug);
+      setBarberConfig(mapApiToBarberConfig(data));
+      setAppointments(mapApiReservationsToAppointments(data.reservations));
+    } catch {
+      // silencioso
+    }
+  }, [slug]);
+
   useEffect(() => {
     refetchBarberData();
   }, [refetchBarberData]);
@@ -236,10 +248,10 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
       // NEXT_PUBLIC_SUPABASE_ANON_KEY no configurado — solo polling
     }
 
-    // Polling cada 5 segundos como fallback (o complemento) al realtime
+    // Polling cada 5 segundos como fallback al realtime (sin spinner)
     const interval = setInterval(() => {
       if (!realtimeActive) {
-        refetchBarberData();
+        silentRefetch();
       }
     }, 5000);
 
@@ -247,7 +259,7 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
       clearInterval(interval);
       if (supabase && channel) supabase.removeChannel(channel);
     };
-  }, [barberId, refetchBarberData]);
+  }, [barberId, silentRefetch]);
 
   const getTimeSlotsForDate = useCallback(
     (date: string): TimeSlot[] => {

@@ -22,8 +22,11 @@ export async function GET(
     }
 
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+    const rangeStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    // Traer 3 meses hacia adelante para cubrir fechas bloqueadas/reservas futuras visibles en el calendario
+    const rangeEnd = new Date(now.getFullYear(), now.getMonth() + 3, 0, 23, 59, 59);
+    const startStr = rangeStart.toISOString().split("T")[0];
+    const endStr = rangeEnd.toISOString().split("T")[0];
 
     const [
       { data: schedule },
@@ -39,14 +42,14 @@ export async function GET(
         .from("blocked_dates")
         .select("date")
         .eq("barber_id", barber.id)
-        .gte("date", startOfMonth.toISOString().split("T")[0])
-        .lte("date", endOfMonth.toISOString().split("T")[0]),
+        .gte("date", startStr)
+        .lte("date", endStr),
       supabaseAdmin
         .from("reservations")
         .select("*")
         .eq("barber_id", barber.id)
-        .gte("date", startOfMonth.toISOString().split("T")[0])
-        .lte("date", endOfMonth.toISOString().split("T")[0]),
+        .gte("date", startStr)
+        .lte("date", endStr),
     ]);
 
     return NextResponse.json(
