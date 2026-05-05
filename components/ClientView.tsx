@@ -239,7 +239,7 @@ export default function ClientView() {
                 <div>
                   <label className="flex items-center gap-2 text-sm text-textMuted mb-2">
                     <User className="w-4 h-4" />
-                    Nombre completo
+                    Nombre
                   </label>
                   <input
                     type="text"
@@ -262,7 +262,7 @@ export default function ClientView() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full px-4 py-3 bg-input border border-gold rounded-lg focus:outline-none focus:border-gold text-text"
-                    placeholder="+34 600 000 000"
+                    placeholder="+569 1234 5678"
                   />
                 </div>
 

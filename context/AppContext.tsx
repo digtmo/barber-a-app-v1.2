@@ -276,14 +276,24 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
         barberConfig.slotDuration
       );
 
-      return timeSlots.map((time) => {
-        const appointment = appointments.find((apt) => apt.date === date && apt.timeSlot === time);
-        return {
-          time,
-          available: !appointment,
-          appointment,
-        };
-      });
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      const isToday = date === todayStr;
+
+      return timeSlots
+        .filter((time) => {
+          if (!isToday) return true;
+          const [slotH, slotM] = time.split(':').map(Number);
+          return slotH * 60 + slotM > now.getHours() * 60 + now.getMinutes();
+        })
+        .map((time) => {
+          const appointment = appointments.find((apt) => apt.date === date && apt.timeSlot === time);
+          return {
+            time,
+            available: !appointment,
+            appointment,
+          };
+        });
     },
     [barberConfig, appointments]
   );
