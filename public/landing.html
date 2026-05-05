@@ -407,71 +407,45 @@
   }
   .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
 
-  /* MOCKUP */
+  /* IPHONE MOCKUP */
   .hero-mockup {
-    position: absolute; right: 5vw; top: 50%; transform: translateY(-50%);
-    width: 340px;
-    animation: fadeUp 0.8s 0.4s ease both;
+    position: absolute; right: 4vw; top: 50%; transform: translateY(-50%);
+    width: 270px;
+    z-index: 2;
+    animation: phoneEntrance 1s 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
-  @media (max-width: 900px) { .hero-mockup { display: none; } }
-
-  .mockup-window {
-    background: var(--dark3);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,168,76,0.1);
+  .hero-mockup img {
+    width: 100%; display: block;
+    filter: drop-shadow(0 40px 70px rgba(0,0,0,0.85)) drop-shadow(0 0 60px rgba(201,168,76,0.14));
+    animation: phoneFloat 5s ease-in-out 1.5s infinite;
   }
 
-  .mockup-bar {
-    background: var(--dark4);
-    padding: 0.6rem 1rem;
-    display: flex; align-items: center; gap: 0.4rem;
-    border-bottom: 1px solid var(--border);
+  .hero-mockup::after {
+    content: '';
+    position: absolute;
+    bottom: -16px; left: 50%; transform: translateX(-50%);
+    width: 55%; height: 28px;
+    background: radial-gradient(ellipse, rgba(201,168,76,0.4) 0%, transparent 70%);
+    filter: blur(8px);
+    animation: glowPulse 5s ease-in-out 1.5s infinite;
   }
-  .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
-  .mockup-dot:nth-child(1) { background: #FF5F57; }
-  .mockup-dot:nth-child(2) { background: #FFBD2E; }
-  .mockup-dot:nth-child(3) { background: #28CA41; }
 
-  .mockup-header {
-    background: linear-gradient(135deg, var(--dark4), var(--dark3));
-    padding: 1.2rem;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
+  @media (max-width: 900px) {
+    #hero {
+      flex-direction: column;
+      align-items: flex-start;
+      padding-bottom: 3rem;
+    }
+    .hero-mockup {
+      position: relative; right: auto; top: auto;
+      transform: none;
+      width: 185px;
+      margin: 2.5rem auto 0;
+      animation: phoneEntranceMobile 0.9s 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .hero-mockup::after { width: 50%; }
   }
-  .mockup-header-title { font-family: var(--serif); color: var(--gold); font-size: 0.95rem; }
-  .mockup-header-date { font-size: 0.75rem; color: var(--muted); }
-
-  .mockup-week {
-    display: grid; grid-template-columns: repeat(7, 1fr);
-    gap: 0; padding: 0.8rem;
-  }
-  .mockup-day {
-    text-align: center; padding: 0.3rem;
-  }
-  .mockup-day .day-label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; }
-  .mockup-day .day-num {
-    width: 26px; height: 26px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.75rem; margin: 0.2rem auto 0;
-  }
-  .mockup-day .day-num.active { background: var(--gold); color: var(--dark); font-weight: 700; }
-  .mockup-day .day-num.blocked { background: rgba(255,255,255,0.04); color: var(--muted); text-decoration: line-through; }
-
-  .mockup-slots { padding: 0.5rem 0.8rem 0.8rem; }
-  .mockup-slot {
-    display: flex; align-items: center; gap: 0.6rem;
-    padding: 0.5rem 0.7rem;
-    border-radius: 6px;
-    margin-bottom: 0.4rem;
-    font-size: 0.75rem;
-  }
-  .mockup-slot.booked { background: rgba(201,168,76,0.12); border-left: 2px solid var(--gold); }
-  .mockup-slot.free { background: rgba(255,255,255,0.03); border-left: 2px solid rgba(255,255,255,0.1); color: var(--muted); }
-  .mockup-slot-time { font-weight: 600; min-width: 38px; color: var(--gold-light); }
-  .mockup-slot.free .mockup-slot-time { color: var(--muted); }
 
   /* SECTIONS COMMON */
   section { padding: 6rem 5vw; }
@@ -1065,6 +1039,26 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  @keyframes phoneEntrance {
+    from { opacity: 0; transform: translateY(calc(-50% + 55px)); }
+    to   { opacity: 1; transform: translateY(-50%); }
+  }
+
+  @keyframes phoneEntranceMobile {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes phoneFloat {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-13px); }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { opacity: 0.6; transform: translateX(-50%) scaleX(1); }
+    50%       { opacity: 1;   transform: translateX(-50%) scaleX(1.15); }
+  }
+
   @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
@@ -1103,31 +1097,7 @@
   </div>
 
   <div class="hero-mockup">
-    <div class="mockup-window">
-      <div class="mockup-bar">
-        <div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div>
-      </div>
-      <div class="mockup-header">
-        <div class="mockup-header-title">Semana actual</div>
-        <div class="mockup-header-date">Feb 2025</div>
-      </div>
-      <div class="mockup-week">
-        <div class="mockup-day"><div class="day-label">Lun</div><div class="day-num">24</div></div>
-        <div class="mockup-day"><div class="day-label">Mar</div><div class="day-num active">25</div></div>
-        <div class="mockup-day"><div class="day-label">Mié</div><div class="day-num">26</div></div>
-        <div class="mockup-day"><div class="day-label">Jue</div><div class="day-num">27</div></div>
-        <div class="mockup-day"><div class="day-label">Vie</div><div class="day-num">28</div></div>
-        <div class="mockup-day"><div class="day-label">Sáb</div><div class="day-num">29</div></div>
-        <div class="mockup-day"><div class="day-label">Dom</div><div class="day-num blocked">30</div></div>
-      </div>
-      <div class="mockup-slots">
-        <div class="mockup-slot booked"><span class="mockup-slot-time">09:00</span> Carlos M. · Corte</div>
-        <div class="mockup-slot booked"><span class="mockup-slot-time">10:00</span> Felipe R. · Fade</div>
-        <div class="mockup-slot free"><span class="mockup-slot-time">11:00</span> Disponible</div>
-        <div class="mockup-slot booked"><span class="mockup-slot-time">12:00</span> Andrés P. · Barba</div>
-        <div class="mockup-slot free"><span class="mockup-slot-time">13:00</span> Disponible</div>
-      </div>
-    </div>
+    <img src="iphone.png" alt="TuBarber app en iPhone — agenda de turnos para barbería" draggable="false">
   </div>
 </section>
 
