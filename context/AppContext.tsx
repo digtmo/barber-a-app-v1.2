@@ -196,7 +196,7 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
     try {
       supabase = getSupabaseBrowser();
       channel = supabase
-        .channel(`reservations:${barberId}`)
+        .channel(`barber:${barberId}`)
         .on(
           'postgres_changes',
           {
@@ -242,6 +242,33 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
                     : a
                 )
               );
+            }
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'blocked_slots',
+            filter: `barber_id=eq.${barberId}`,
+          },
+          (payload) => {
+            realtimeActive = true;
+            if (payload.eventType === 'INSERT') {
+              const s = payload.new as { date: string; time: string };
+              const key = `${s.date} ${s.time}`;
+              setBarberConfig((prev) => {
+                if (prev.blockedSlots.includes(key)) return prev;
+                return { ...prev, blockedSlots: [...prev.blockedSlots, key] };
+              });
+            } else if (payload.eventType === 'DELETE') {
+              const s = payload.old as { date: string; time: string };
+              const key = `${s.date} ${s.time}`;
+              setBarberConfig((prev) => ({
+                ...prev,
+                blockedSlots: prev.blockedSlots.filter((k) => k !== key),
+              }));
             }
           }
         )
