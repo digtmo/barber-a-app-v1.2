@@ -443,27 +443,41 @@
 
     .hero-mockup--desktop { display: none; }
 
+    /* Título + imagen en fila */
+    .hero-title-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0;
+    }
+
+    .hero-title-row .hero-title {
+      font-size: clamp(2rem, 8vw, 3rem);
+      flex: 1;
+      margin-bottom: 0;
+    }
+
     .hero-mockup--mobile {
       display: block;
       position: relative;
-      width: 175px;
-      margin: 1.6rem auto 0;
+      flex-shrink: 0;
+      width: 130px;
       animation: phoneEntranceMobile 0.9s 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
     .hero-mockup--mobile img {
       width: 100%; display: block;
-      filter: drop-shadow(0 28px 50px rgba(0,0,0,0.85)) drop-shadow(0 0 40px rgba(201,168,76,0.13));
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.85)) drop-shadow(0 0 30px rgba(201,168,76,0.14));
       animation: phoneFloat 5s ease-in-out 1.4s infinite;
     }
 
     .hero-mockup--mobile::after {
       content: '';
       position: absolute;
-      bottom: -12px; left: 50%; transform: translateX(-50%);
-      width: 50%; height: 20px;
-      background: radial-gradient(ellipse, rgba(201,168,76,0.38) 0%, transparent 70%);
-      filter: blur(6px);
+      bottom: -10px; left: 50%; transform: translateX(-50%);
+      width: 60%; height: 16px;
+      background: radial-gradient(ellipse, rgba(201,168,76,0.4) 0%, transparent 70%);
+      filter: blur(5px);
       animation: glowPulse 5s ease-in-out 1.4s infinite;
     }
 
@@ -1115,11 +1129,13 @@
       <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="6"/></svg>
       Sistema de turnos para barbería · 14 días gratis
     </div>
-    <h1 class="hero-title">La agenda de turnos<br>que tu barbería <em>merece</em></h1>
+    <div class="hero-title-row">
+      <h1 class="hero-title">La agenda de turnos<br>que tu barbería <em>merece</em></h1>
 
-    <!-- Imagen solo visible en mobile, entre título y tagline -->
-    <div class="hero-mockup--mobile">
-      <img src="iphone.png" alt="TuBarber app en iPhone" draggable="false">
+      <!-- Imagen solo visible en mobile, a la derecha del título -->
+      <div class="hero-mockup--mobile">
+        <img src="iphone.png" alt="TuBarber app en iPhone" draggable="false">
+      </div>
     </div>
 
     <p class="hero-tagline">Olvida el papel, el WhatsApp y las llamadas perdidas.<br>Tus clientes sacan su turno solos, las 24 horas.</p>
