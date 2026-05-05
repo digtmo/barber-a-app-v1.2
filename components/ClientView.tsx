@@ -116,7 +116,20 @@ export default function ClientView() {
     setConfirmedBooking(null);
   };
 
-  const timeSlots = selectedDate ? getTimeSlotsForDate(selectedDate) : [];
+  const allTimeSlots = selectedDate ? getTimeSlotsForDate(selectedDate) : [];
+  const timeSlots = allTimeSlots.filter((slot) => {
+    if (slot.blocked) return false;
+    // Ocultar slots pasados si es hoy (usando fecha local)
+    if (selectedDate) {
+      const now = new Date();
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      if (selectedDate === todayStr) {
+        const [slotH, slotM] = slot.time.split(':').map(Number);
+        if (slotH * 60 + slotM <= now.getHours() * 60 + now.getMinutes()) return false;
+      }
+    }
+    return true;
+  });
   const hasNoSlots = selectedDate && timeSlots.length === 0;
 
   return (

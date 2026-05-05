@@ -32,6 +32,11 @@ export interface ApiBlockedDate {
   date: string;
 }
 
+export interface ApiBlockedSlot {
+  date: string;
+  time: string;
+}
+
 export interface ApiReservation {
   id: string;
   barber_id: string;
@@ -51,6 +56,7 @@ export interface ApiBarberData {
   email: string;
   schedule: ApiSchedule | null;
   blocked_dates: ApiBlockedDate[];
+  blocked_slots: ApiBlockedSlot[];
   reservations: ApiReservation[];
 }
 
@@ -151,6 +157,41 @@ export async function savePushSubscription(
   if (!res.ok) {
     if (res.status === 402) throw new Error('Suscripción no activa');
     throw new Error((data as { error?: string }).error || 'Error al guardar notificaciones');
+  }
+}
+
+export async function blockSlot(slug: string, date: string, time: string): Promise<void> {
+  const token = getToken();
+  if (!token) throw new Error('No autorizado');
+  const res = await fetch(`/api/barbers/${encodeURIComponent(slug)}/blocked-slots`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ date, time }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (res.status === 402) throw new Error('Suscripción no activa');
+    throw new Error((data as { error?: string }).error || `Error ${res.status}`);
+  }
+}
+
+export async function unblockSlot(slug: string, date: string, time: string): Promise<void> {
+  const token = getToken();
+  if (!token) throw new Error('No autorizado');
+  const res = await fetch(
+    `/api/barbers/${encodeURIComponent(slug)}/blocked-slots/${encodeURIComponent(date)}/${encodeURIComponent(time)}`,
+    {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (res.status === 402) throw new Error('Suscripción no activa');
+    throw new Error((data as { error?: string }).error || `Error ${res.status}`);
   }
 }
 

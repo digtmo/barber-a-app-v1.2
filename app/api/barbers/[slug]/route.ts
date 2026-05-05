@@ -31,6 +31,7 @@ export async function GET(
     const [
       { data: schedule },
       { data: blockedDates },
+      { data: blockedSlots },
       { data: reservations },
     ] = await Promise.all([
       supabaseAdmin
@@ -41,6 +42,12 @@ export async function GET(
       supabaseAdmin
         .from("blocked_dates")
         .select("date")
+        .eq("barber_id", barber.id)
+        .gte("date", startStr)
+        .lte("date", endStr),
+      supabaseAdmin
+        .from("blocked_slots")
+        .select("date, time")
         .eq("barber_id", barber.id)
         .gte("date", startStr)
         .lte("date", endStr),
@@ -57,6 +64,7 @@ export async function GET(
         ...barber,
         schedule: schedule ?? null,
         blocked_dates: blockedDates ?? [],
+        blocked_slots: blockedSlots ?? [],
         reservations: reservations ?? [],
       },
       {

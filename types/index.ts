@@ -13,11 +13,13 @@ export interface BarberConfig {
   slotDuration: 30 | 60;
   workingDays: number[];
   blockedDates: string[];
+  blockedSlots: string[]; // formato: "YYYY-MM-DD HH:mm"
   isConfigured: boolean;
 }
 
 export interface TimeSlot {
   time: string;
   available: boolean;
+  blocked: boolean;
   appointment?: Appointment;
 }

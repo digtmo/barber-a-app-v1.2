@@ -6,7 +6,7 @@ import { useApp } from '@/context/AppContext';
 import { getWeekDates, formatDate, formatDisplayDate, isToday } from '@/utils/dateUtils';
 
 export default function BarberAgenda() {
-  const { getTimeSlotsForDate, barberConfig, blockDate, unblockDate, clearAllBlockedDates, appointments, deleteReservation } = useApp();
+  const { getTimeSlotsForDate, barberConfig, blockDate, unblockDate, clearAllBlockedDates, blockSlot, unblockSlot, appointments, deleteReservation } = useApp();
   const [selectedDate, setSelectedDate] = useState<string>(formatDate(new Date()));
   const [weekOffset, setWeekOffset] = useState(0);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
@@ -46,7 +46,7 @@ export default function BarberAgenda() {
     }
   };
 
-  const occupiedCount = timeSlots.filter(slot => !slot.available).length;
+  const occupiedCount = timeSlots.filter(slot => slot.appointment).length;
   const totalSlots = timeSlots.length;
 
   return (
@@ -94,7 +94,7 @@ export default function BarberAgenda() {
             const isSelected = selectedDate === dateStr;
             const isTodayDate = isToday(date);
             const dateSlots = getTimeSlotsForDate(dateStr);
-            const hasAppointments = dateSlots.some(slot => !slot.available);
+            const hasAppointments = dateSlots.some(slot => slot.appointment);
             const isDateBlocked = barberConfig.blockedDates.includes(dateStr);
 
             return (
@@ -179,53 +179,98 @@ export default function BarberAgenda() {
               <div
                 key={slot.time}
                 className={`p-4 rounded-lg border transition-all ${
-                  slot.available
-                    ? 'bg-surface border-gold'
-                    : 'bg-gold/10 border-gold'
+                  slot.blocked
+                    ? 'bg-error/5 border-error/30'
+                    : slot.appointment
+                    ? 'bg-gold/10 border-gold'
+                    : 'bg-surface border-gold'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`flex items-center gap-2 font-bold ${
-                      slot.available ? 'text-textMuted' : 'text-gold'
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className={`flex items-center gap-2 font-bold shrink-0 ${
+                      slot.blocked ? 'text-error/70' : slot.appointment ? 'text-gold' : 'text-textMuted'
                     }`}>
                       <Clock className="w-4 h-4" />
                       {slot.time}
                     </div>
-                    {slot.available ? (
-                      <span className="text-sm text-textMuted">Disponible</span>
-                    ) : slot.appointment && (
-                      <div className="flex items-center justify-between gap-2 min-w-0 w-full text-sm">
-                        <div className="flex items-center gap-3 min-w-0 flex-1 overflow-hidden">
-                          <div className="flex items-center gap-2 text-text min-w-0 shrink-0">
-                            <User className="w-4 h-4 flex-shrink-0" />
-                            <span className="truncate">{slot.appointment.clientName}</span>
-                          </div>
-                          <a
-                            href={`tel:${slot.appointment.clientPhone.replace(/\s/g, '')}`}
-                            className="flex items-center gap-2 text-textMuted hover:text-gold transition-colors shrink-0"
-                            title="Llamar al cliente"
-                          >
-                            <Phone className="w-4 h-4" />
-                            <span>{slot.appointment.clientPhone}</span>
-                          </a>
+                    {slot.blocked ? (
+                      <span className="text-sm text-error/70 flex items-center gap-1">
+                        <Lock className="w-3.5 h-3.5" />
+                        Bloqueado
+                      </span>
+                    ) : slot.appointment ? (
+                      <div className="flex items-center gap-3 min-w-0 flex-1 overflow-hidden text-sm">
+                        <div className="flex items-center gap-2 text-text min-w-0 shrink-0">
+                          <User className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">{slot.appointment.clientName}</span>
                         </div>
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            if (!slot.appointment || !confirm('¿Eliminar esta reserva?')) return;
-                            try {
-                              await deleteReservation(slot.appointment.id);
-                            } catch {
-                              // el contexto ya muestra error o se puede añadir toast
-                            }
-                          }}
-                          title="Eliminar reserva"
-                          className="p-1.5 rounded text-error hover:text-error hover:bg-error/10 transition-colors flex-shrink-0"
+                        <a
+                          href={`tel:${slot.appointment.clientPhone.replace(/\s/g, '')}`}
+                          className="flex items-center gap-2 text-textMuted hover:text-gold transition-colors shrink-0"
+                          title="Llamar al cliente"
                         >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                          <Phone className="w-4 h-4" />
+                          <span>{slot.appointment.clientPhone}</span>
+                        </a>
                       </div>
+                    ) : (
+                      <span className="text-sm text-textMuted">Disponible</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {slot.blocked ? (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (loadingAction) return;
+                          setLoadingAction(`unblock-slot-${slot.time}`);
+                          try {
+                            await unblockSlot(selectedDate, slot.time);
+                          } finally {
+                            setLoadingAction(null);
+                          }
+                        }}
+                        disabled={!!loadingAction}
+                        title="Desbloquear slot"
+                        className="p-1.5 rounded text-gold hover:bg-gold/10 transition-colors disabled:opacity-50"
+                      >
+                        <Unlock className="w-4 h-4" />
+                      </button>
+                    ) : slot.appointment ? (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!slot.appointment || !confirm('¿Eliminar esta reserva?')) return;
+                          try {
+                            await deleteReservation(slot.appointment.id);
+                          } catch {
+                            // silencioso
+                          }
+                        }}
+                        title="Eliminar reserva"
+                        className="p-1.5 rounded text-error hover:bg-error/10 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (loadingAction) return;
+                          setLoadingAction(`block-slot-${slot.time}`);
+                          try {
+                            await blockSlot(selectedDate, slot.time);
+                          } finally {
+                            setLoadingAction(null);
+                          }
+                        }}
+                        disabled={!!loadingAction}
+                        title="Bloquear slot"
+                        className="p-1.5 rounded text-textMuted hover:text-error hover:bg-error/10 transition-colors disabled:opacity-50"
+                      >
+                        <Lock className="w-4 h-4" />
+                      </button>
                     )}
                   </div>
                 </div>

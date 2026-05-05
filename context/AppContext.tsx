@@ -12,6 +12,8 @@ import {
   blockDate as apiBlockDate,
   unblockDate as apiUnblockDate,
   clearAllBlockedDates as apiClearAllBlockedDates,
+  blockSlot as apiBlockSlot,
+  unblockSlot as apiUnblockSlot,
   createReservation,
   deleteReservation as apiDeleteReservation,
   clearAllReservations as apiClearAllReservations,
@@ -34,6 +36,8 @@ interface AppContextType {
   blockDate: (date: string) => Promise<void>;
   unblockDate: (date: string) => Promise<void>;
   clearAllBlockedDates: () => Promise<void>;
+  blockSlot: (date: string, time: string) => Promise<void>;
+  unblockSlot: (date: string, time: string) => Promise<void>;
   authenticateBarber: (email: string, password: string) => Promise<boolean>;
   logoutBarber: () => void;
   getTimeSlotsForDate: (date: string) => TimeSlot[];
@@ -48,6 +52,7 @@ const defaultBarberConfig: BarberConfig = {
   slotDuration: 30,
   workingDays: [1, 2, 3, 4, 5],
   blockedDates: [],
+  blockedSlots: [],
   isConfigured: false,
 };
 
@@ -75,6 +80,7 @@ function mapApiToBarberConfig(api: Awaited<ReturnType<typeof apiFetchBarberData>
     slotDuration: (schedule.appointment_duration_minutes === 60 ? 60 : 30) as 30 | 60,
     workingDays: schedule.working_days ?? [],
     blockedDates: (api.blocked_dates ?? []).map((d) => d.date),
+    blockedSlots: (api.blocked_slots ?? []).map((s) => `${s.date} ${s.time}`),
     isConfigured,
   };
 }
@@ -276,24 +282,16 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
         barberConfig.slotDuration
       );
 
-      const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
-      const isToday = date === todayStr;
-
-      return timeSlots
-        .filter((time) => {
-          if (!isToday) return true;
-          const [slotH, slotM] = time.split(':').map(Number);
-          return slotH * 60 + slotM > now.getHours() * 60 + now.getMinutes();
-        })
-        .map((time) => {
-          const appointment = appointments.find((apt) => apt.date === date && apt.timeSlot === time);
-          return {
-            time,
-            available: !appointment,
-            appointment,
-          };
-        });
+      return timeSlots.map((time) => {
+        const appointment = appointments.find((apt) => apt.date === date && apt.timeSlot === time);
+        const blocked = barberConfig.blockedSlots.includes(`${date} ${time}`);
+        return {
+          time,
+          available: !appointment && !blocked,
+          blocked,
+          appointment,
+        };
+      });
     },
     [barberConfig, appointments]
   );
@@ -388,6 +386,30 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
     [slug]
   );
 
+  const blockSlot = useCallback(
+    async (date: string, time: string) => {
+      if (!slug) throw new Error('Barbero no disponible');
+      await apiBlockSlot(slug, date, time);
+      setBarberConfig((prev) => ({
+        ...prev,
+        blockedSlots: [...prev.blockedSlots, `${date} ${time}`],
+      }));
+    },
+    [slug]
+  );
+
+  const unblockSlot = useCallback(
+    async (date: string, time: string) => {
+      if (!slug) throw new Error('Barbero no disponible');
+      await apiUnblockSlot(slug, date, time);
+      setBarberConfig((prev) => ({
+        ...prev,
+        blockedSlots: prev.blockedSlots.filter((s) => s !== `${date} ${time}`),
+      }));
+    },
+    [slug]
+  );
+
   const clearAllBlockedDates = useCallback(async () => {
     if (!slug) throw new Error('Barbero no disponible');
     await apiClearAllBlockedDates(slug);
@@ -447,6 +469,8 @@ export function AppProvider({ children, slug }: { children: ReactNode; slug: str
         blockDate,
         unblockDate,
         clearAllBlockedDates,
+        blockSlot,
+        unblockSlot,
         clearAllReservations,
         authenticateBarber,
         logoutBarber,
